@@ -75,7 +75,9 @@ namespace SoftfyWeb.Controllers
             {
                 pc.Cancion.Id,
                 pc.Cancion.Titulo,
-                pc.Cancion.UrlArchivo
+                pc.Cancion.UrlArchivo,
+                pc.Cancion.Genero,
+                pc.Cancion.FechaLanzamiento,
             }).ToList();
 
             return Ok(canciones);
@@ -339,6 +341,73 @@ namespace SoftfyWeb.Controllers
 
             return Ok(playlists);
         }
+        [HttpGet("{id}")]
+        public ActionResult<Playlist> GetPlaylist(int id)
+        {
+            // Buscar la playlist por id
+            var playlist = _context.Playlists
+                .Where(p => p.Id == id)
+                .FirstOrDefault();
+
+            // Verificar si la playlist existe
+            if (playlist == null)
+            {
+                return NotFound(new { message = "La playlist no existe." });
+            }
+
+            // Retornar el modelo directamente
+            return Ok(playlist);
+        }
+
+        [HttpGet("buscar/{nombre}")]
+        public ActionResult<Playlist> GetPlaylistByName(string nombre)
+        {
+            var playlist = _context.Playlists
+                .Where(p => p.Nombre.ToLower() == nombre.ToLower())
+                .FirstOrDefault();
+
+            if (playlist == null)
+            {
+                return NotFound(new { message = "La playlist no existe." });
+            }
+
+            return Ok(playlist);
+        }
+
+        [HttpPost("guardar/{playlistId}/cancion/{cancionId}")]
+        public async Task<IActionResult> GuardarCancionEnPlaylist(int playlistId, int cancionId)
+        {
+            var cancion = await _context.Canciones.FindAsync(cancionId);
+            if (cancion == null)
+            {
+                return NotFound(new { message = "Canción no encontrada." });
+            }
+
+            var playlist = await _context.Playlists.FindAsync(playlistId);
+            if (playlist == null)
+            {
+                return NotFound(new { message = "Playlist no encontrada." });
+            }
+
+            var playlistCancionExistente = _context.PlaylistCanciones
+                .FirstOrDefault(pc => pc.PlaylistId == playlistId && pc.CancionId == cancionId);
+            if (playlistCancionExistente != null)
+            {
+                return BadRequest(new { message = "La canción ya está en esta playlist." });
+            }
+
+            var playlistCancion = new PlaylistCancion
+            {
+                PlaylistId = playlistId,
+                CancionId = cancionId
+            };
+
+            _context.PlaylistCanciones.Add(playlistCancion);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Canción agregada a la playlist." });
+        }
+
 
     }
 }

@@ -1,0 +1,40 @@
+﻿@model IEnumerable<SoftfyWeb.Modelos.Cancion>
+
+@{
+    ViewData["Title"] = "Ver Álbum";
+    var playlistId = ViewBag.PlaylistId as int?;
+    var nombreAlbum = ViewBag.PlaylistNombre;
+    var propietario = ViewBag.PlaylistPropietario as string;
+}
+
+<div class="container mt-4">
+    <h2 style="font-size: 2rem; font-weight: bold; color: #000;">
+        Album @nombreAlbum
+    </h2>
+
+    @if (!Model.Any())
+    {
+        <p class="text-muted">Este álbum no tiene canciones aún.</p>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var c in Model)
+            {
+                <div class="col-md-3 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">@c.Titulo</h5>
+                            <p class="card-text">Género: @c.Genero</p>
+                            <p class="card-text">Fecha de Lanzamiento: @c.FechaLanzamiento.ToShortDateString()</p>
+                            <audio controls style="width: 100%;">
+                                <source src="@c.UrlArchivo" type="audio/mpeg" />
+                                Tu navegador no soporta audio.
+                            </audio>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

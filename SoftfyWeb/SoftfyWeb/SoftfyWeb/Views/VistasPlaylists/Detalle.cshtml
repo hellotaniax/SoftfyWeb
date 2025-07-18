@@ -5,44 +5,72 @@
     ViewData["Title"] = "Detalle de Playlist";
 }
 
-<h2>Detalle de playlist</h2>
+<div class="container py-5">
+    <h2 class="text-center">@ViewData["Title"]</h2>
 
-@if (TempData["Error"] != null)
-{
-    <div class="alert alert-danger">@TempData["Error"]</div>
-}
-
-<!-- Form para agregar una nueva canción -->
-<form asp-action="AgregarCancion" method="post" class="mb-4">
-    @Html.AntiForgeryToken()
-    <input type="hidden" name="playlistId" value="@ViewBag.PlaylistId" />
-
-    <div class="form-inline">
-        <label class="mr-2" for="cancionId">Selecciona canción:</label>
-        <select name="cancionId" class="form-control mr-2" required>
-            <option value="">-- Elige una --</option>
-            @foreach (var c in ViewBag.CancionesArtista as List<CancionDto>)
-            {
-                <option value="@c.Id">@c.Titulo</option>
-            }
-        </select>
-        <button type="submit" class="btn btn-primary">Agregar</button>
-    </div>
-</form>
-
-<hr />
-
-<h4>Canciones en esta playlist</h4>
-<ul class="list-group">
-    @foreach (var c in Model)
+    @if (TempData["Error"] != null)
     {
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-            <div>
-                <strong>@c.Titulo</strong>
-            </div>
-            <a href="@c.UrlArchivo" target="_blank" class="btn btn-sm btn-outline-secondary">
-                ▶️ Reproducir
-            </a>
-        </li>
+        <div class="alert alert-danger text-center">@TempData["Error"]</div>
     }
-</ul>
+
+    <!-- Mostrar el nombre de la playlist -->
+    <div class="text-center mt-4">
+        <h3>@ViewBag.PlaylistNombre</h3>
+        <p class="text-muted">Aquí están todas las canciones de esta playlist.</p>
+    </div>
+
+    <!-- Título de Canciones en Playlist -->
+    <h4 class="mt-4">Canciones en esta playlist</h4>
+
+    <!-- Lista de Canciones -->
+    @if (Model.Any())
+    {
+        <div class="list-group">
+            @foreach (var c in Model)
+            {
+                <div class="list-group-item d-flex justify-content-between align-items-center mb-3 shadow-sm rounded">
+                    <div class="d-flex align-items-center">
+                        <!-- Título de la Canción -->
+                        <strong class="mr-3">@c.Titulo</strong>
+
+                        <!-- Agregar más detalles de la canción (si lo deseas) -->
+                        <span class="text-muted small">🎵</span>
+                    </div>
+
+                    <div class="d-flex align-items-center">
+                        <!-- Reproductor de Audio de Bootstrap -->
+                        <audio controls class="ml-3">
+                            <source src="@c.UrlArchivo" type="audio/mpeg">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <p class="text-center text-muted">No hay canciones disponibles en esta playlist.</p>
+    }
+</div>
+
+<!-- Estilos adicionales para mejorar la presentación -->
+<style>
+    .list-group-item {
+        transition: transform 0.2s ease-in-out;
+    }
+
+        .list-group-item:hover {
+            transform: scale(1.03);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+    .btn-outline-primary {
+        transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+    }
+
+        .btn-outline-primary:hover {
+            background-color: #007bff;
+            color: white;
+        }
+</style>

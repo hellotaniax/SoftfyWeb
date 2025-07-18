@@ -54,12 +54,16 @@
 
                     @if (esPremium)  
                     {
-                        <form asp-controller="Playlists" asp-action="GuardarCancion" method="post">
+                        <form asp-controller="VistasPlaylists" asp-action="GuardarEnPlaylist" method="get">
                             <input type="hidden" name="cancionId" value="@cancion.Id" />
                             <button type="submit" class="btn btn-sm btn-primary" onclick="return confirm('¿Guardar esta canción?');">
                                 Guardar canción
                             </button>
                         </form>
+                        <!-- Botón para descargar la canción si es premium -->
+                        <a href="@cancion.UrlArchivo" download="@cancion.Titulo" class="btn btn-sm btn-success" style="margin-top: 10px;">
+                            Descargar canción
+                        </a>
                     }
                 </div>
             }
@@ -73,7 +77,7 @@
             {
                 <div class="cancion-item">
                     <h4>
-                        <a asp-action="VerCanciones" asp-controller="VistaAdmin" asp-route-id="@playlist.Id" class="text-decoration-none">
+                        <a asp-action="VerCanciones" asp-controller="VistasCanciones" asp-route-id="@playlist.Id" class="text-decoration-none">
                             @playlist.Nombre
                         </a>
                     </h4>

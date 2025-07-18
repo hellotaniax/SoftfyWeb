@@ -81,7 +81,7 @@ namespace SoftfyWeb.Controllers
         {
             var client = ObtenerClienteConToken();
 
-            // 1️⃣ Obtener las canciones que ya están en la playlist
+            // Obtener las canciones que ya están en la playlist
             var resp = await client.GetAsync($"playlists/{id}/canciones");
             if (!resp.IsSuccessStatusCode)
                 return View("Error", CrearErrorModel());
@@ -90,14 +90,6 @@ namespace SoftfyWeb.Controllers
             var opciones = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
             var cancionesPlaylist = JsonSerializer.Deserialize<List<PlaylistCancionDto>>(raw, opciones);
 
-            // Ajustar URL de reproducción
-            foreach (var c in cancionesPlaylist)
-            {
-                var nombreArchivo = Path.GetFileName(c.UrlArchivo);
-                c.UrlArchivo = $"https://localhost:7003/api/canciones/reproducir/{nombreArchivo}";
-            }
-
-            // 2️⃣ Obtener **todas** las canciones del artista actual
             var respArtista = await client.GetAsync("canciones/mis-canciones");
             List<CancionDto> cancionesArtista = new();
             if (respArtista.IsSuccessStatusCode)
@@ -282,5 +274,56 @@ namespace SoftfyWeb.Controllers
 
             return View(cancionesPlaylist);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GuardarEnPlaylist(int cancionId)
+        {
+            var client = ObtenerClienteConToken();
+            var response = await client.GetAsync("https://localhost:7003/api/Playlists/mis-playlists");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var playlistsJson = await response.Content.ReadAsStringAsync();
+                var playlists = JsonSerializer.Deserialize<List<PlaylistDto>>(playlistsJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+                if (playlists != null)
+                {
+                    ViewBag.Playlists = playlists;
+                    ViewBag.CancionId = cancionId;
+                    return View();
+                }
+            }
+
+            ViewBag.Error = "No se pudieron cargar las playlists.";
+            return View();
+        }
+
+
+
+
+        [HttpPost]
+        public async Task<IActionResult> GuardarEnPlaylist(int cancionId, int playlistId)
+        {
+            if (playlistId == 0)
+            {
+                ViewBag.Error = "El ID de la playlist no es válido.";
+                return View();
+            }
+
+            var client = ObtenerClienteConToken();
+            var response = await client.PostAsync($"https://localhost:7003/api/Playlists/guardar/{playlistId}/cancion/{cancionId}", null);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return RedirectToAction("Index", "VistasPlaylists");
+            }
+
+            var errorDetails = await response.Content.ReadAsStringAsync();
+            ViewBag.Error = $"Error: {response.StatusCode} - {errorDetails}";
+            return View();
+        }
+
+
+
     }
 }
