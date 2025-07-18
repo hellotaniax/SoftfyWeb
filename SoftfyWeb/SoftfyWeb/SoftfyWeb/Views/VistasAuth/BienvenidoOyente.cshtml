@@ -1,22 +1,22 @@
 ﻿@{
     ViewData["Title"] = "Bienvenido, " + ViewBag.OyenteNombre;
+    var esPremium = User.IsInRole("OyentePremium"); // Verificar si el usuario es premium
 }
 
 <link rel="stylesheet" href="~/css/player.css" />
 
 <div class="container">
-    <h2>Bienvenido a Softfy 🎵, @ViewBag.OyenteNombre</h2>
+    <h2 class="text-center">Bienvenido a Softfy 🎵, @ViewBag.OyenteNombre</h2>
 
     <div class="section">
         <h3>Todas las Canciones</h3>
         <div class="canciones-container">
             @foreach (var cancion in ViewBag.TodasCanciones)
             {
-                <div class="cancion-item" style="position: relative;">
-                    <form asp-controller="VistasPlaylists" asp-action="DarMeGusta" method="post" class="d-inline" style="position: absolute; top: 10px; left: 10px;">
+                <div class="cancion-item">
+                    <form asp-controller="VistasPlaylists" asp-action="DarMeGusta" method="post" class="form-inline">
                         <input type="hidden" name="cancionId" value="@cancion.Id" />
-                        <button type="submit" class="btn btn-sm btn-primary"
-                                onclick="return confirm('¿Agregar esta canción a Me Gusta?');">
+                        <button type="submit" class="btn btn-sm btn-primary" onclick="return confirm('¿Agregar esta canción a Me Gusta?');">
                             Me Gusta
                         </button>
                     </form>
@@ -27,53 +27,45 @@
 
                     @if (!string.IsNullOrEmpty(cancion.UrlArchivo))
                     {
-                        <div class="cancion-item">
-                            <p><strong>@cancion.Titulo</strong></p>
-                            <p><em>@cancion.Artista?.NombreArtistico</em></p>
-                            <p><em>@cancion.Genero</em></p>
+                        <audio id="audio-@cancion.Id" src="@cancion.UrlArchivo" preload="metadata"></audio>
 
-                            @if (!string.IsNullOrEmpty(cancion.UrlArchivo))
-                            {
-                                <audio id="audio-@cancion.Id" src="@cancion.UrlArchivo" preload="metadata"></audio>
+                        <div class="custom-player" data-audio-id="audio-@cancion.Id">
+                            <div class="controls">
+                                <button class="backward-btn">⏪</button>
+                                <button class="play-btn">▶️</button>
+                                <button class="forward-btn">⏩</button>
+                            </div>
 
-                                <div class="custom-player" data-audio-id="audio-@cancion.Id">
-                                    <div class="controls">
-                                        <button class="backward-btn">⏪</button>
-                                        <button class="play-btn">▶️</button>
-                                        <button class="forward-btn">⏩</button>
-                                    </div>
+                            <div class="progress-container">
+                                <input type="range" class="progress" value="0" min="0" step="0.1">
+                                <span class="time">0:00 / 0:00</span>
+                            </div>
 
-                                    <div class="progress-container">
-                                        <input type="range" class="progress" value="0" min="0" step="0.1">
-                                        <span class="time">0:00 / 0:00</span>
-                                    </div>
-
-                                    <div class="volume-controls">
-                                        <input type="range" class="volume" min="0" max="1" step="0.01" value="1">
-                                        <button class="mute-btn">🔊</button>
-                                    </div>
-                                </div>
-                            }
-                            else
-                            {
-                                <p>No disponible</p>
-                            }
-                            <form asp-controller="Playlists" asp-action="GuardarCancion" method="post">
-                                <input type="hidden" name="cancionId" value="@cancion.Id" />
-                                <button type="submit" class="btn btn-sm btn-primary" onclick="return confirm('¿Guardar esta canción?');">
-                                    Guardar canción
-                                </button>
-                            </form>
+                            <div class="volume-controls">
+                                <input type="range" class="volume" min="0" max="1" step="0.01" value="1">
+                                <button class="mute-btn">🔊</button>
+                            </div>
                         </div>
                     }
                     else
                     {
                         <p>No disponible</p>
                     }
+
+                    @if (esPremium)  
+                    {
+                        <form asp-controller="Playlists" asp-action="GuardarCancion" method="post">
+                            <input type="hidden" name="cancionId" value="@cancion.Id" />
+                            <button type="submit" class="btn btn-sm btn-primary" onclick="return confirm('¿Guardar esta canción?');">
+                                Guardar canción
+                            </button>
+                        </form>
+                    }
                 </div>
             }
         </div>
     </div>
+
     <div class="section">
         <h3>Todas las Playlists</h3>
         <div class="canciones-container">
@@ -90,28 +82,27 @@
                 </div>
             }
         </div>
-        <div class="section">
-            <h3>Todos los artistas</h3>
-            <div class="artistas-grid">
-                @foreach (var artista in ViewBag.Artistas)
-                {
-                    <div class="artista-card">
-                        <img src="@artista.FotoUrl" alt="Foto de @artista.NombreArtistico" class="artista-img" />
-                        <h5>
-                            <a href="@Url.Action("VerPerfilpublico", "VistasAuth", new { id = artista.Id })">
-                                @artista.NombreArtistico
-                            </a>
-                        </h5>
+    </div>
 
-                        <p class="bio">@artista.Biografia</p>
-                    </div>
-                }
-            </div>
+    <div class="section">
+        <h3>Todos los artistas</h3>
+        <div class="artistas-grid">
+            @foreach (var artista in ViewBag.Artistas)
+            {
+                <div class="artista-card">
+                    <img src="@artista.FotoUrl" alt="Foto de @artista.NombreArtistico" class="artista-img" />
+                    <h5>
+                        <a href="@Url.Action("VerPerfilpublico", "VistasAuth", new { id = artista.Id })">
+                            @artista.NombreArtistico
+                        </a>
+                    </h5>
+
+                    <p class="bio">@artista.Biografia</p>
+                </div>
+            }
         </div>
     </div>
 </div>
-
-
 
 @section Scripts {
     <script src="~/js/player.js"></script>
@@ -119,15 +110,15 @@
 
 <style>
     .artistas-grid {
-        display: flex;
-        flex-wrap: wrap;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
         gap: 20px;
-        justify-content: center;
-        margin-top: 1rem;
+        justify-items: center;
+        margin-top: 2rem;
     }
 
     .artista-card {
-        width: 230px;
+        width: 100%;
         padding: 1rem;
         background-color: #f8f8f8;
         border-radius: 10px;
@@ -155,5 +146,49 @@
         color: #444;
         margin-top: 0.3rem;
         font-style: italic;
+    }
+
+    .canciones-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: space-evenly;
+        margin-top: 1rem;
+    }
+
+    .cancion-item {
+        background-color: #f8f8f8;
+        padding: 1rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        width: 300px;
+        text-align: center;
+    }
+
+    .form-inline {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+
+    .form-inline button {
+        margin-left: 10px;
+    }
+
+    .custom-player {
+        margin-top: 1rem;
+        text-align: center;
+    }
+
+    .controls button {
+        margin: 0 10px;
+    }
+
+    .progress-container {
+        margin: 1rem 0;
+    }
+
+    .volume-controls {
+        margin-top: 1rem;
     }
 </style>

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using SoftfyWeb.Dtos;
 using SoftfyWeb.Modelos.Dtos;
 using SoftfyWeb.Models;
@@ -9,6 +10,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.NetworkInformation;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -56,7 +58,7 @@ namespace SoftfyWeb.Controllers
 
             var json = await response.Content.ReadAsStringAsync();
             var opciones = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-            var lista = JsonSerializer.Deserialize<List<CancionRespuestaDto>>(json, opciones);
+            var lista = JsonConvert.DeserializeObject<List<CancionRespuestaDto>>(json);
 
             return View(lista);
         }
@@ -74,7 +76,7 @@ namespace SoftfyWeb.Controllers
 
             var json = await response.Content.ReadAsStringAsync();
             var opts = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-            var lista = JsonSerializer.Deserialize<List<CancionRespuestaDto>>(json, opts);
+            var lista = JsonConvert.DeserializeObject<List<CancionRespuestaDto>>(json);
 
             return View(lista);
         }
@@ -130,6 +132,62 @@ namespace SoftfyWeb.Controllers
                 TempData["Error"] = "No se pudo eliminar la canción.";
 
             return RedirectToAction("MisCanciones");
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Artista")]
+        public async Task<IActionResult> EditarCancion(int id)
+        {
+            var client = ObtenerClienteConToken();
+            var response = await client.GetAsync($"canciones/{id}");
+            if (!response.IsSuccessStatusCode)
+                return RedirectToAction("MisCanciones");
+
+            var json = await response.Content.ReadAsStringAsync();
+            var cancion = Newtonsoft.Json.JsonConvert.DeserializeObject<CancionCrearDto>(json);
+            var dto = new CancionCrearDto   
+            {
+                Titulo = cancion.Titulo,
+                Genero = cancion.Genero,
+                FechaLanzamiento = cancion.FechaLanzamiento
+            };
+            ViewBag.CancionId = id;
+            return View("Editar", dto);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Artista")]
+        public async Task<IActionResult> ActualizarCancion(int id, [FromForm] CancionCrearDto song, IFormFile? nuevoArchivo)
+        {
+            if (song == null || string.IsNullOrEmpty(song.Titulo) || string.IsNullOrEmpty(song.Genero))
+            {
+                ModelState.AddModelError("", "Por favor, complete todos los campos.");
+                return View("Editar", song);  // Regresar a la vista con los datos actuales
+            }
+
+            var client = ObtenerClienteConToken();
+            var formData = new MultipartFormDataContent();
+            formData.Add(new StringContent(song.Titulo), "Titulo");
+            formData.Add(new StringContent(song.Genero), "Genero");
+            formData.Add(new StringContent(song.FechaLanzamiento.ToString("yyyy-MM-dd")), "FechaLanzamiento");
+
+            if (nuevoArchivo != null)
+            {
+                var streamContent = new StreamContent(nuevoArchivo.OpenReadStream());
+                streamContent.Headers.Add("Content-Type", nuevoArchivo.ContentType);
+                formData.Add(streamContent, "nuevoArchivo", nuevoArchivo.FileName);
+            }
+
+            var response = await client.PutAsync($"canciones/editar/{id}", formData); // Aquí usamos PUT ya que es la acción de actualización en la API
+
+            if (!response.IsSuccessStatusCode)
+            {
+                ViewBag.Error = "Hubo un problema al actualizar la canción.";
+                return View("Editar", song);  // Regresar a la vista si hay error
+            }
+
+            ViewBag.Mensaje = "Canción actualizada correctamente.";
+            return RedirectToAction("MisCanciones");  // Redirigir a la página de Mis Canciones
         }
 
         [AllowAnonymous]

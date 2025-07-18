@@ -41,7 +41,7 @@ namespace SoftfyWeb.Controllers
                 PlanId = plan.Id,
                 UsuarioPrincipalId = usuario.Id,
                 FechaInicio = DateTime.UtcNow,
-                FechaFin = DateTime.UtcNow.AddMonths(1), // Asumiendo que la suscripción es mensual
+                FechaFin = DateTime.UtcNow.AddMonths(1),
             };
 
             _context.Suscripciones.Add(suscripcion);
@@ -99,7 +99,6 @@ namespace SoftfyWeb.Controllers
         public async Task<IActionResult> AgregarMiembro([FromBody] AgregarMiembroDto dto)
         {
             var titular = await _userManager.GetUserAsync(User);
-
             var suscripcion = await _context.Suscripciones
                 .Include(s => s.Plan)
                 .Include(s => s.Miembros)
@@ -127,15 +126,18 @@ namespace SoftfyWeb.Controllers
                 SuscripcionId = suscripcion.Id,
                 FechaAgregado = DateTime.UtcNow
             };
-
             _context.MiembrosSuscripciones.Add(miembro);
             await _context.SaveChangesAsync();
 
             // Cambiar rol
             await _userManager.RemoveFromRoleAsync(usuarioNuevo, "Oyente");
             await _userManager.AddToRoleAsync(usuarioNuevo, "OyentePremium");
-            await _userManager.UpdateSecurityStampAsync(usuarioNuevo);
 
+            // ✅ AGREGAR ESTAS LÍNEAS: Actualizar el campo TipoUsuario
+            usuarioNuevo.TipoUsuario = "OyentePremium";
+            await _userManager.UpdateAsync(usuarioNuevo);
+
+            await _userManager.UpdateSecurityStampAsync(usuarioNuevo);
 
             return Ok(new { mensaje = "Usuario agregado a la suscripción con éxito" });
         }
@@ -144,7 +146,6 @@ namespace SoftfyWeb.Controllers
         public async Task<IActionResult> EliminarMiembro([FromBody] EliminarMiembroDto dto)
         {
             var titular = await _userManager.GetUserAsync(User);
-
             var suscripcion = await _context.Suscripciones
                 .Include(s => s.Miembros)
                 .FirstOrDefaultAsync(s => s.UsuarioPrincipalId == titular.Id);
@@ -168,12 +169,15 @@ namespace SoftfyWeb.Controllers
             _context.MiembrosSuscripciones.Remove(miembro);
             await _context.SaveChangesAsync();
 
-            // Cambiar rol a Oyente normal (si no está en otra suscripción)
             var sigueEnOtra = await _context.MiembrosSuscripciones.AnyAsync(m => m.UsuarioId == usuario.Id);
             if (!sigueEnOtra)
             {
                 await _userManager.RemoveFromRoleAsync(usuario, "OyentePremium");
                 await _userManager.AddToRoleAsync(usuario, "Oyente");
+
+                // ✅ AGREGAR ESTAS LÍNEAS: Actualizar el campo TipoUsuario
+                usuario.TipoUsuario = "Oyente";
+                await _userManager.UpdateAsync(usuario);
             }
 
             return Ok(new { mensaje = "Miembro eliminado correctamente" });
@@ -183,7 +187,6 @@ namespace SoftfyWeb.Controllers
         public async Task<IActionResult> SalirDeSuscripcion()
         {
             var usuario = await _userManager.GetUserAsync(User);
-
             var miembro = await _context.MiembrosSuscripciones
                 .Include(m => m.Suscripcion)
                 .FirstOrDefaultAsync(m => m.UsuarioId == usuario.Id);
@@ -202,6 +205,10 @@ namespace SoftfyWeb.Controllers
             await _userManager.RemoveFromRoleAsync(usuario, "OyentePremium");
             await _userManager.AddToRoleAsync(usuario, "Oyente");
 
+            // ✅ AGREGAR ESTAS LÍNEAS: Actualizar el campo TipoUsuario
+            usuario.TipoUsuario = "Oyente";
+            await _userManager.UpdateAsync(usuario);
+
             return Ok(new { mensaje = "Has salido de la suscripción correctamente" });
         }
 
@@ -211,7 +218,6 @@ namespace SoftfyWeb.Controllers
         public async Task<IActionResult> CancelarSuscripcion()
         {
             var titular = await _userManager.GetUserAsync(User);
-
             // Buscar suscripción del titular incluyendo sus miembros
             var suscripcion = await _context.Suscripciones
                 .Include(s => s.Miembros)
@@ -230,6 +236,9 @@ namespace SoftfyWeb.Controllers
                     // Eliminar rol Premium y añadir rol Oyente
                     await _userManager.RemoveFromRoleAsync(usuario, "OyentePremium");
                     await _userManager.AddToRoleAsync(usuario, "Oyente");
+
+                    usuario.TipoUsuario = "Oyente";
+                    await _userManager.UpdateAsync(usuario);
                 }
             }
 

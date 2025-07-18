@@ -1,0 +1,52 @@
+﻿@model SoftfyWeb.Dtos.CancionCrearDto
+
+@{
+    ViewData["Title"] = "Editar Canción";
+}
+
+<div class="container py-5">
+    <h2 class="text-white mb-4 text-center">Editar Canción</h2>
+
+    <form asp-action="ActualizarCancion" method="post" enctype="multipart/form-data" class="text-white">
+        <input type="hidden" name="id" value="@ViewBag.CancionId" />
+
+        <div class="mb-3">
+            <label asp-for="Titulo" class="form-label">Título</label>
+            <input asp-for="Titulo" class="form-control" />
+            <span asp-validation-for="Titulo" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Genero" class="form-label">Género</label>
+            <input asp-for="Genero" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="FechaLanzamiento" class="form-label">Fecha de lanzamiento</label>
+            <input asp-for="FechaLanzamiento" type="date" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label for="nuevoArchivo" class="form-label">Archivo nuevo (opcional)</label>
+            <input type="file" name="nuevoArchivo" class="form-control" />
+        </div>
+
+        <div class="d-flex justify-content-between">
+            <a asp-action="MisCanciones" class="btn btn-secondary">Cancelar</a>
+            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+        </div>
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger mt-3">@ViewBag.Error</div>
+        }
+        @if (ViewBag.Mensaje != null)
+        {
+            <div class="alert alert-success mt-3">@ViewBag.Mensaje</div>
+        }
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

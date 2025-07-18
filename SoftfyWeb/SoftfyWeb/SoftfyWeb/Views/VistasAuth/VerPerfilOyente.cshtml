@@ -15,7 +15,10 @@
         <button class="btn btn-warning" onclick="activarEdicion()">Editar</button>
     </div>
 
-    <form id="formEditar" method="post" asp-action="ActualizarPerfilOyente" style="display:none">
+    <!-- Formulario de edición -->
+    <form id="formEditar" method="post" asp-action="ActualizarPerfilOyente" asp-controller="VistasAuth">
+        @Html.AntiForgeryToken()
+
         <div class="mb-3">
             <label class="form-label">Nombre</label>
             <input type="text" class="form-control" name="Nombre" value="@nombre" required />
@@ -29,15 +32,35 @@
         <button type="submit" class="btn btn-primary">Guardar Cambios</button>
         <button type="button" class="btn btn-secondary" onclick="cancelarEdicion()">Cancelar</button>
     </form>
+
+
+    @if (TempData["Mensaje"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["Mensaje"]
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["Error"]
+        </div>
+    }
+
+
 </div>
+
 
 @section Scripts {
     <script>
+        // Muestra el formulario de edición y oculta los datos de perfil
         function activarEdicion() {
             document.getElementById('modoTexto').style.display = 'none';
             document.getElementById('formEditar').style.display = 'block';
         }
 
+        // Cancela la edición y vuelve a mostrar los datos del perfil
         function cancelarEdicion() {
             document.getElementById('formEditar').reset();
             document.getElementById('modoTexto').style.display = 'block';
