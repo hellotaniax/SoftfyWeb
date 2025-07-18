@@ -543,7 +543,6 @@ namespace SoftfyWeb.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ActualizarPerfilOyente(string Nombre, string Apellido)
         {
-            // Verificar que los datos estén llegando al controlador
             Console.WriteLine($"Nombre: {Nombre}, Apellido: {Apellido}");
 
             if (string.IsNullOrEmpty(Nombre) || string.IsNullOrEmpty(Apellido))
@@ -551,19 +550,16 @@ namespace SoftfyWeb.Controllers
                 TempData["Error"] = "El nombre y apellido no pueden estar vacíos.";
                 return RedirectToAction("VerPerfil");
             }
-
-            // Obtener el cliente con el token JWT
             var client = ObtenerClienteConToken();
-
             var jsonBody = new
             {
                 nombre = Nombre,
                 apellido = Apellido
             };
-
             var content = new StringContent(JsonSerializer.Serialize(jsonBody), Encoding.UTF8, "application/json");
 
-            var response = await client.PutAsync("https://localhost:7003/api/oyentes/actualizar", content);
+            var response = await client.PostAsync("https://localhost:7003/api/oyentes/actualizar", content);
+
             var respuestaTexto = await response.Content.ReadAsStringAsync();
 
             if (response.IsSuccessStatusCode)

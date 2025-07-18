@@ -16,7 +16,7 @@
     </div>
 
     <!-- Formulario de edición -->
-    <form id="formEditar" method="post" asp-action="ActualizarPerfilOyente" asp-controller="VistasAuth">
+    <form id="formEditar" method="post" asp-action="ActualizarPerfilOyente" asp-controller="VistasAuth" style="display:none;">
         @Html.AntiForgeryToken()
 
         <div class="mb-3">
@@ -33,7 +33,6 @@
         <button type="button" class="btn btn-secondary" onclick="cancelarEdicion()">Cancelar</button>
     </form>
 
-
     @if (TempData["Mensaje"] != null)
     {
         <div class="alert alert-success">
@@ -47,10 +46,7 @@
             @TempData["Error"]
         </div>
     }
-
-
 </div>
-
 
 @section Scripts {
     <script>
