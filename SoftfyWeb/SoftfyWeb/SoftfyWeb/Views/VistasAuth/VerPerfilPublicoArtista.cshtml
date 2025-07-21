@@ -66,10 +66,23 @@
                 <li>
                     <strong>@cancion.Titulo</strong>
                     <br />
-                    <audio controls>
-                        <source src="@cancion.UrlArchivo" type="audio/mpeg">
-                        Tu navegador no soporta el elemento de audio.
-                    </audio>
+                    <div class="audio-player" data-id="@cancion.Id">
+                        <div class="player-controls">
+                            <button class="play-pause" data-id="@cancion.Id">▶️</button>
+                            <span class="time current">0:00</span>
+                            <input type="range" class="progress" value="0" step="1">
+                            <span class="time duration">0:00</span>
+
+                            @* Solo mostrar si es Oyente Premium *@
+                            @if (User.IsInRole("OyentePremium"))
+                            {
+                                <a class="download-btn" href="@cancion.UrlArchivo" download>
+                                    ⬇️
+                                </a>
+                            }
+                        </div>
+                        <audio id="audio-@cancion.Id" src="@cancion.UrlArchivo"></audio>
+                    </div>
                 </li>
             }
         </ul>

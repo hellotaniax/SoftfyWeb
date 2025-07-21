@@ -26,6 +26,7 @@
                 <th>Género</th>
                 <th>Fecha de lanzamiento</th>
                 <th>Reproducir</th>
+                <th>Acciones</th>
             </tr>
         </thead>
         <tbody>
@@ -36,6 +37,18 @@
                     <td>@c.Genero</td>
                     <td>@c.FechaLanzamiento.ToString("yyyy-MM-dd")</td>
                     <td><audio controls src="@c.UrlArchivo" style="max-width: 200px"></audio></td>
+                    <td>
+                    <form asp-controller="VistasPlaylists" asp-action="GuardarEnPlaylist" method="get">
+                        <input type="hidden" name="cancionId" value="@c.Id" />
+                        <button type="submit" class="btn btn-sm btn-primary" onclick="return confirm('¿Guardar esta canción?');">
+                            Agregar a album
+                        </button>
+                    </form>
+                        <form method="post" action="@Url.Action("EliminarCancion", "VistasCanciones")" onsubmit="return confirm('¿Estás seguro de eliminar esta canción?');">
+                            <input type="hidden" name="id" value="@c.Id" />
+                            <button type="submit" class="btn btn-danger btn-sm mt-2">Eliminar</button>
+                        </form>
+                    </td>
                 </tr>
             }
         </tbody>

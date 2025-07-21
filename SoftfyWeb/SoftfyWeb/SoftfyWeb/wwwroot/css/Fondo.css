@@ -1,0 +1,479 @@
+﻿html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient( -45deg, #ffd700, #ff8c00, #000000, #1e90ff, #00ffff );
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
+    color: white;
+    overflow-x: hidden;
+}
+
+@keyframes gradientBG {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+h1, h2, h3, h4, h5 {
+    font-family: 'Segoe UI', 'Verdana', 'Arial', sans-serif;
+    color: #ffffff;
+    text-align: center;
+    font-weight: 900;
+    font-size: 2.2em;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    text-shadow: 0 0 5px rgba(0, 255, 170, 0.5);
+}
+
+/* Texto general moderno */
+p, span, label, li {
+    font-family: 'Verdana', 'Arial', sans-serif;
+    color: #e0e0e0;
+    font-size: 1em;
+    letter-spacing: 0.5px;
+    line-height: 1.6;
+}
+
+a {
+    color: aqua;
+    text-decoration: none;
+}
+
+    a:hover {
+        text-decoration: underline;
+    }
+
+/* Contenedor translúcido */
+.container {
+    background-color: rgba(0, 0, 0, 0.3);
+    padding: 2rem;
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+    margin-top: 2rem;
+}
+
+/* Contenedores interactivos */
+.cancion-item, .artista-card {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+    backdrop-filter: blur(10px);
+    padding: 1rem;
+}
+
+    .cancion-item:hover, .artista-card:hover {
+        background-color: #1db9ff;
+        transform: translateY(-5px);
+        box-shadow: 0 6px 20px rgba(0, 255, 255, 0.4);
+        cursor: pointer;
+    }
+
+/* Grid de artistas */
+.artistas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 24px;
+    justify-items: center;
+    margin-top: 2rem;
+}
+
+/* Card de artista */
+.artista-card {
+    padding: 1.5rem;
+    text-align: center;
+    border: 2px solid transparent;
+}
+
+.artista-img {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 5px solid #ff7000;
+    margin-bottom: 1rem;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+    .artista-img:hover {
+        transform: scale(1.1) rotate(3deg);
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+    }
+
+.artista-card h5 {
+    margin: 0;
+    font-size: 20px;
+    color: #ffffff;
+}
+
+.artista-card .bio {
+    font-size: 14px;
+    color: #dddddd;
+    margin-top: 0.5rem;
+    font-style: italic;
+}
+
+/* Canciones */
+.canciones-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    justify-content: space-evenly;
+    margin-top: 1.5rem;
+}
+
+/* Botones */
+button {
+    background-color: white;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+    button:hover {
+        background-color: aqua;
+        transform: scale(1.05);
+    }
+
+/* Formularios */
+.form-inline {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+    .form-inline button {
+        margin-left: 10px;
+    }
+
+/* Reproductor */
+.custom-player {
+    margin-top: 1rem;
+    text-align: center;
+}
+
+.controls button {
+    margin: 0 10px;
+    font-size: 18px;
+    background-color: transparent;
+    color: white;
+}
+
+.progress-container {
+    margin: 1rem 0;
+}
+
+.volume-controls {
+    margin-top: 1rem;
+}
+
+/* Layout principal */
+.body-wrapper {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+}
+
+/* Sidebar fija izquierda */
+.sidebar {
+    width: 250px;
+    background-color: rgba(48, 54, 61, 0.95);
+    color: white;
+    padding: 1.5rem 1rem;
+    display: flex;
+    flex-direction: column;
+    backdrop-filter: blur(6px);
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.4);
+}
+
+    .sidebar h3 {
+        margin-bottom: 2rem;
+        color: white;
+        text-align: center;
+    }
+
+    .sidebar a {
+        color: #e0e0e0;
+        text-decoration: none;
+        padding: 0.6rem 1rem;
+        border-radius: 8px;
+        transition: background-color 0.3s ease;
+    }
+
+        .sidebar a:hover {
+            background-color: #3b3f52;
+        }
+
+    .sidebar .logout {
+        margin-top: auto;
+    }
+
+/* Contenido principal */
+.content {
+    flex-grow: 1;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow-y: auto;
+}
+
+/* Contenido centrado internamente */
+.main-wrapper {
+    width: 100%;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Estilo de la barra de búsqueda */
+.search-bar {
+    margin-bottom: 20px;
+    background-color: rgba(255, 255, 255, 0.08);
+    padding: 12px 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+    width: 100%;
+}
+
+.search-form {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+    .search-form input {
+        flex: 1;
+        padding: 8px 16px;
+        background-color: rgba(255, 255, 255, 0.1);
+        color: white;
+        border: 1px solid #444c5e;
+        border-radius: 25px;
+        transition: border-color 0.3s ease;
+    }
+
+        .search-form input::placeholder {
+            color: #ccc;
+        }
+
+        .search-form input:focus {
+            outline: none;
+            border-color: #1db9ff;
+        }
+
+    .search-form button {
+        padding: 8px 20px;
+        border: none;
+        background-color: #1db9ff;
+        color: white;
+        border-radius: 25px;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+        .search-form button:hover {
+            background-color: #17a6e6;
+            transform: scale(1.05);
+        }
+
+@import url('https://fonts.googleapis.com/css2?family=Aptos+Black&display=swap');
+
+.playlist-container {
+    background: linear-gradient(135deg, #1b2a3a, #203a43);
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+    max-width: 400px;
+    margin: 2rem auto;
+    text-align: center;
+    color: white;
+    font-family: 'Aptos Black', sans-serif;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+    .playlist-container:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7);
+    }
+
+.playlist-title {
+    font-size: 2.4rem;
+    color: aliceblue;
+    margin-bottom: 1rem;
+    text-shadow: 2px 2px 5px #000;
+}
+
+.playlist-container p {
+    font-size: 1.4rem;
+    margin: 0.8rem 0;
+}
+
+.playlist-label {
+    font-weight: bold;
+    color: white;
+    text-shadow: 1px 1px 2px #000;
+}
+
+
+/* Tablas con bordes redondeados y estilo elegante */
+.table {
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: rgba(0, 35, 51, 0.6); /* Azul profundo verdoso translúcido */
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.15);
+    backdrop-filter: blur(5px);
+}
+
+    .table thead {
+        background-color: aquamarine;
+        color: black;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    .table tbody td {
+        color: white;
+    }
+
+    .table thead th {
+        color: black;
+    }
+
+    .table td, .table th {
+        text-align: center;
+        vertical-align: middle;
+        border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Filas alternas con leve tono */
+    .table tbody tr:nth-child(even) {
+        background-color: rgba(0, 70, 90, 0.2);
+    }
+
+    /* Botones en tablas */
+    .table button, .table a.btn {
+        color: white !important;
+        font-weight: 500;
+    }
+
+
+audio {
+    width: 100%;
+    max-width: 300px;
+    margin: auto;
+}
+
+/* Etiquetas de los campos */
+form label {
+    color: #ffffff;
+    font-weight: 600;
+    display: block;
+    margin-bottom: 5px;
+}
+
+/* Inputs, selects y textarea personalizados sin alterar estructura */
+.form-control {
+    background-color: #111;
+    color: #ffffff;
+    border: 2px solid #00ffff;
+    border-radius: 10px;
+    padding: 10px 14px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+    .form-control:focus {
+        border-color: #00eaff;
+        box-shadow: none;
+        outline: none;
+    }
+
+/* Inputs de tipo archivo */
+input[type="file"].form-control {
+    background-color: #ffffff;
+    color: #000000;
+    font-weight: 600;
+    padding: 8px 10px;
+    border-radius: 10px;
+}
+
+/* Botón personalizado (usa btn-success para no romper otras clases) */
+form .btn-success {
+    background-color: #00ffe0;
+    color: #000;
+    font-weight: bold;
+    border-radius: 25px;
+    padding: 10px 25px;
+    border: none;
+    box-shadow: 0 0 10px #00ffe0;
+    transition: background-color 0.3s ease;
+}
+
+    form .btn-success:hover {
+        background-color: #00e0ff;
+    }
+
+/* Validación */
+.text-danger {
+    color: #ff4d4d !important;
+    font-weight: bold;
+}
+
+.cancion-item {
+    background: linear-gradient(135deg, #181818, #1e1e1e);
+    border-radius: 20px;
+    padding: 2rem 1rem;
+    text-align: center;
+    color: white;
+    max-width: 320px;
+    margin: 1rem auto;
+    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.5);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+    .cancion-item:hover {
+        transform: scale(1.02);
+        box-shadow: 0 8px 30px rgba(0, 255, 200, 0.2);
+    }
+
+    /* Título llamativo */
+    .cancion-item strong {
+        font-size: 1.4rem;
+        color: #ffffff;
+        display: block;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 0 8px rgba(0,255,255,0.3);
+    }
+
+    /* Artista y género estilizados */
+    .cancion-item em {
+        display: block;
+        font-size: 1rem;
+        font-style: normal;
+        color: #cccccc;
+        margin-bottom: 0.3rem;
+    }
+
+    /* Espaciado entre el texto y el reproductor */
+    .cancion-item .audio-player {
+        margin-top: 1rem;
+    }
+
+    /* Botones organizados al final */
+    .cancion-item form {
+        margin-top: 1rem;
+    }

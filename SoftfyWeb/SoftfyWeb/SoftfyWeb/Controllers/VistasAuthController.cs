@@ -384,12 +384,6 @@ namespace SoftfyWeb.Controllers
 
                 if (canciones != null && canciones.Any())
                 {
-                    // Actualizar URL para el reproductor
-                    foreach (var cancion in canciones)
-                    {
-                        var nombreArchivo = Path.GetFileName(cancion.UrlArchivo);
-                        cancion.UrlArchivo = $"https://localhost:7003/api/canciones/reproducir/{nombreArchivo}";
-                    }
 
                     ViewBag.Canciones = canciones;
                 }

@@ -2,16 +2,21 @@
 @{
     ViewData["Title"] = "Mis canciones Me Gusta";
 }
-
-<h2 class="text-center">Mis canciones Me Gusta</h2>
+<h2>Mis canciones Me Gusta</h2>
+@if (User.IsInRole("OyentePremium"))
+{
+    <p>
+        <a asp-action="Index" class="btn btn-secondary">Volver a mis playlists</a>
+    </p>
+}
 
 @if (ViewBag.Message != null)
 {
-    <div class="alert alert-info text-center">@ViewBag.Message</div>
+    <div class="alert alert-info">@ViewBag.Message</div>
 }
 else if (!Model.Canciones.Any())
 {
-    <div class="alert alert-info text-center">Aún no tienes canciones favoritas.</div>
+    <div class="alert alert-info">Aún no tienes canciones favoritas.</div>
 }
 else
 {
@@ -20,33 +25,46 @@ else
             <tr>
                 <th>Título</th>
                 <th>Artista</th>
-                <th>Reproducir</th>
-                <th>Acción</th> <!-- Botón de eliminar -->
+                <th></th>
             </tr>
         </thead>
         <tbody>
             @foreach (var cancion in Model.Canciones)
             {
-                <tr>
-                    <td>@cancion.Titulo</td>
-                    <td>@cancion.Artista</td>
-                    <td>
-                        <!-- Reproductor de audio -->
-                        <audio controls>
-                            <source src="@cancion.UrlArchivo" type="audio/mpeg">
-                            Tu navegador no soporta el elemento de audio.
-                        </audio>
-                    </td>
-                    <td>
-                        <form asp-action="QuitarMeGusta" method="post" class="d-inline">
-                            <input type="hidden" name="cancionId" value="@cancion.Id" />
-                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar esta canción de Me Gusta?');">
-                                Eliminar
-                            </button>
-                        </form>
-                    </td>
-                </tr>
-            }
+            <td>@cancion.Titulo</td>
+            <td>@cancion.Artista</td>
+            <tr>
+                <td>
+                    <div class="audio-player" data-id="@cancion.Id">
+                        <div class="player-controls">
+                            <button class="play-pause" data-id="@cancion.Id">▶️</button>
+                            <span class="time current">0:00</span>
+                            <input type="range" class="progress" value="0" step="1">
+                            <span class="time duration">0:00</span>
+
+                            @* Solo mostrar si es Oyente Premium *@
+                            @if (User.IsInRole("OyentePremium"))
+                            {
+                                <a class="download-btn" href="@cancion.UrlArchivo" download>
+                                    ⬇️
+                                </a>
+                            }
+                        </div>
+                        <audio id="audio-@cancion.Id" src="@cancion.UrlArchivo"></audio>
+                    </div>
+                </td>
+                <td>
+                    <form asp-action="QuitarCancion" method="post" class="d-inline">
+                        <input type="hidden" name="playlistId" value="@ViewBag.PlaylistId" />
+                        <input type="hidden" name="cancionId" value="@cancion.Id" />
+                        <button type="submit" class="btn btn-sm btn-danger"
+                                onclick="return confirm('¿Eliminar de Me Gusta?');">
+                            Eliminar
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        }
         </tbody>
     </table>
 }

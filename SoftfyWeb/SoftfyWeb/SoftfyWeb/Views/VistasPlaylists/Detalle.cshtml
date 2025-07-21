@@ -1,76 +1,75 @@
-﻿@model List<PlaylistCancionDto>
-@using SoftfyWeb.Modelos.Dtos
+﻿@model IEnumerable<SoftfyWeb.Modelos.Dtos.PlaylistCancionDto>
 
-@{
-    ViewData["Title"] = "Detalle de Playlist";
-}
+<h2>Detalle de la Playlist</h2>
 
-<div class="container py-5">
-    <h2 class="text-center">@ViewData["Title"]</h2>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Título</th>
+            <th>Archivo</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var c in Model)
+        {
+            <tr>
+                <td>@c.Titulo</td>
+                <td>
+                    <div class="audio-player" data-id="@c.Id">
+                        <div class="player-controls">
+                            <button class="play-pause" data-id="@c.Id">▶️</button>
+                            <span class="time current">0:00</span>
+                            <input type="range" class="progress" value="0" step="1">
+                            <span class="time duration">0:00</span>
 
-    @if (TempData["Error"] != null)
-    {
-        <div class="alert alert-danger text-center">@TempData["Error"]</div>
-    }
+                            @* Solo mostrar si es Oyente Premium *@
+                            @if (User.IsInRole("OyentePremium"))
+                            {
+                                <a class="download-btn" href="@c.UrlArchivo" download>
+                                    ⬇️
+                                </a>
+                            }
+                        </div>
+                        <audio id="audio-@c.Id" src="@c.UrlArchivo"></audio>
+                    </div>
+                </td>
+                <td>
+                    <form asp-action="QuitarCancion" method="post">
+                        <input type="hidden" name="playlistId" value="@ViewBag.PlaylistId" />
+                        <input type="hidden" name="cancionId" value="@c.Id" />
+                        <button type="submit" class="btn btn-sm btn-danger">Quitar</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
 
-    <!-- Mostrar el nombre de la playlist -->
-    <div class="text-center mt-4">
-        <h3>@ViewBag.PlaylistNombre</h3>
-        <p class="text-muted">Aquí están todas las canciones de esta playlist.</p>
+<h4>Agregar canción al álbum</h4>
+<form asp-action="AgregarCancion" method="post" class="row g-2">
+    @Html.AntiForgeryToken() <!-- Token anti-forgery -->
+
+    <input type="hidden" name="playlistId" value="@ViewBag.PlaylistId" />
+
+    <div class="col-auto">
+        <select name="cancionId" class="form-control">
+            <option value="">-- Selecciona una canción --</option>
+            @if (ViewBag.CancionesArtista != null && ViewBag.CancionesArtista.Count > 0)
+            {
+                foreach (var cancion in ViewBag.CancionesArtista)
+                {
+                    <option value="@cancion.Id">@cancion.Titulo</option>
+                }
+            }
+            else
+            {
+                <option value="">No hay canciones disponibles</option>
+            }
+        </select>
     </div>
 
-    <!-- Título de Canciones en Playlist -->
-    <h4 class="mt-4">Canciones en esta playlist</h4>
-
-    <!-- Lista de Canciones -->
-    @if (Model.Any())
-    {
-        <div class="list-group">
-            @foreach (var c in Model)
-            {
-                <div class="list-group-item d-flex justify-content-between align-items-center mb-3 shadow-sm rounded">
-                    <div class="d-flex align-items-center">
-                        <!-- Título de la Canción -->
-                        <strong class="mr-3">@c.Titulo</strong>
-
-                        <!-- Agregar más detalles de la canción (si lo deseas) -->
-                        <span class="text-muted small">🎵</span>
-                    </div>
-
-                    <div class="d-flex align-items-center">
-                        <!-- Reproductor de Audio de Bootstrap -->
-                        <audio controls class="ml-3">
-                            <source src="@c.UrlArchivo" type="audio/mpeg">
-                            Your browser does not support the audio element.
-                        </audio>
-                    </div>
-                </div>
-            }
-        </div>
-    }
-    else
-    {
-        <p class="text-center text-muted">No hay canciones disponibles en esta playlist.</p>
-    }
-</div>
-
-<!-- Estilos adicionales para mejorar la presentación -->
-<style>
-    .list-group-item {
-        transition: transform 0.2s ease-in-out;
-    }
-
-        .list-group-item:hover {
-            transform: scale(1.03);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        }
-
-    .btn-outline-primary {
-        transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
-    }
-
-        .btn-outline-primary:hover {
-            background-color: #007bff;
-            color: white;
-        }
-</style>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-primary mb-3">Agregar</button>
+    </div>
+</form>

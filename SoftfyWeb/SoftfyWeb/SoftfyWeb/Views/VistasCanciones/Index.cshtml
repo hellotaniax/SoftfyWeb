@@ -1,6 +1,7 @@
 ﻿@model IEnumerable<SoftfyWeb.Modelos.Dtos.CancionRespuestaDto>
 @{
     ViewData["Title"] = "Todas las canciones";
+    var esPremium = User.IsInRole("OyentePremium");
 }
 
 <h2>@ViewData["Title"]</h2>
@@ -23,10 +24,23 @@
                 <td>@c.Genero</td>
                 <td>@c.FechaLanzamiento.ToString("yyyy-MM-dd")</td>
                 <td>
-                    <audio controls>
-                        <source src="@c.UrlArchivo" type="audio/mpeg">
-                        Tu navegador no soporta el elemento de audio.
-                    </audio>
+                    <div class="audio-player" data-id="@c.Id">
+                        <div class="player-controls">
+                            <button class="play-pause" data-id="@c.Id">▶️</button>
+                            <span class="time current">0:00</span>
+                            <input type="range" class="progress" value="0" step="1">
+                            <span class="time duration">0:00</span>
+
+                            @* Solo mostrar si es Oyente Premium *@
+                            @if (User.IsInRole("OyentePremium"))
+                            {
+                                <a class="download-btn" href="@c.UrlArchivo" download>
+                                    ⬇️
+                                </a>
+                            }
+                        </div>
+                        <audio id="audio-@c.Id" src="@c.UrlArchivo"></audio>
+                    </div>
                 </td>
                 <td>
                     <form asp-controller="VistasPlaylists" asp-action="DarMeGusta" method="post" class="d-inline">
@@ -36,6 +50,15 @@
                             Me Gusta
                         </button>
                     </form>
+                    @if (esPremium)
+                    {
+                        <form asp-controller="VistasPlaylists" asp-action="GuardarEnPlaylist" method="get">
+                            <input type="hidden" name="cancionId" value="@c.Id" />
+                            <button type="submit" class="btn btn-sm btn-primary" onclick="return confirm('¿Guardar esta canción?');">
+                                Guardar canción
+                            </button>
+                        </form>
+                    }
 
                 </td>
             </tr>

@@ -13,7 +13,23 @@
         {
             <li class="list-group-item">
                 <strong>@cancion.Titulo</strong>
-                <audio controls src="@cancion.UrlArchivo" class="mt-2 w-100"></audio>
+                <div class="audio-player" data-id="@cancion.Id">
+                    <div class="player-controls">
+                        <button class="play-pause" data-id="@cancion.Id">▶️</button>
+                        <span class="time current">0:00</span>
+                        <input type="range" class="progress" value="0" step="1">
+                        <span class="time duration">0:00</span>
+
+                        @* Solo mostrar si es Oyente Premium *@
+                        @if (User.IsInRole("OyentePremium"))
+                        {
+                            <a class="download-btn" href="@cancion.UrlArchivo" download>
+                                ⬇️
+                            </a>
+                        }
+                    </div>
+                    <audio id="audio-@cancion.Id" src="@cancion.UrlArchivo"></audio>
+                </div>
             </li>
         }
     </ul>

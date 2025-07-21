@@ -2,6 +2,14 @@
 
 @{
     ViewData["Title"] = "Editar Canción";
+    var generos = new List<string> {
+        "Pop", "Rock", "Hip Hop", "Reggaetón", "Jazz", "Blues", "Clásica",
+        "Electrónica", "Salsa", "Cumbia", "Bachata", "Trap", "R&B",
+        "Funk", "Country", "Metal", "Indie", "Punk", "House", "Tecno",
+        "Disco", "Alternativa", "Flamenco", "Merengue", "Folk", "Góspel",
+        "K-Pop", "Ska", "Ambient", "Dubstep", "Drum and Bass", "Reggae",
+        "Lofi", "Synthwave", "Opera", "Instrumental"
+    };
 }
 
 <div class="container py-5">
@@ -17,8 +25,15 @@
         </div>
 
         <div class="mb-3">
-            <label asp-for="Genero" class="form-label">Género</label>
-            <input asp-for="Genero" class="form-control" />
+            <label>Género</label>
+            <select asp-for="Genero" class="form-control">
+                <option value="">-- Selecciona un género --</option>
+                @foreach (var genero in generos)
+                {
+                    <option value="@genero">@genero</option>
+                }
+            </select>
+            <span asp-validation-for="Genero" class="text-danger"></span>
         </div>
 
         <div class="mb-3">

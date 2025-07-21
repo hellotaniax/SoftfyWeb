@@ -1,97 +1,58 @@
-﻿.container {
-    padding: 2rem;
-    max-width: 1400px;
-    margin: 0 auto;
+﻿.audio-player {
+    background-color: #f0f0f0;
+    border-radius: 12px;
+    padding: 10px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    max-width: 100%;
 }
 
-.section {
-    margin-top: 2rem;
-}
-
-.canciones-container {
+.player-controls {
     display: flex;
+    align-items: center;
+    gap: 10px;
     flex-wrap: wrap;
-    gap: 2rem;
-    justify-content: center;
 }
 
-.cancion-item {
-    width: 350px;
-    background-color: #fff;
-    border-radius: 16px;
-    padding: 1.5rem;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-    font-family: 'Segoe UI', sans-serif;
-    transition: transform 0.2s ease;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    position: relative;
-}
-
-    .cancion-item:hover {
-        transform: translateY(-4px);
-    }
-
-    .cancion-item p {
-        margin: 0.3rem 0;
-        font-size: 15px;
-        color: #555;
-        text-align: center;
-        font-style: italic;
-    }
-
-.custom-player {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
-    margin-top: 1.2rem;
-    width: 100%;
-}
-
-.controls {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-}
-
-.progress-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-}
-
-input.progress {
-    width: 100%;
-    height: 6px;
-    border-radius: 6px;
-    background: #1db954;
+.play-pause {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
     cursor: pointer;
+    color: #000;
 }
 
-span.time {
-    font-size: 13px;
+.progress {
+    flex: 1;
+    cursor: pointer;
+    appearance: none;
+    height: 5px;
+    background: #ccc;
+    border-radius: 5px;
+}
+
+    .progress::-webkit-slider-thumb {
+        appearance: none;
+        width: 10px;
+        height: 10px;
+        background: #000;
+        border-radius: 50%;
+        cursor: pointer;
+    }
+
+.time {
+    font-family: monospace;
+    font-size: 0.9rem;
     color: #333;
-    margin-top: 0.2rem;
 }
 
-.volume-controls {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 0.6rem;
-}
-
-input.volume {
-    width: 120px;
-    height: 6px;
-    border-radius: 6px;
-    background: #f44336;
-    cursor: pointer;
+.download-btn {
+    margin-left: 5px;
+    font-size: 1.2rem;
+    text-decoration: none;
+    color: #333;
 }
 
     .download-btn:hover {
-        background-color: #b71c1c;
+        color: #000;
     }
