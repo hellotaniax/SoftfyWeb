@@ -4,51 +4,111 @@
 }
 
 <style>
+    body {
+        background-color: #121212;
+        color: white;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .artist-section {
+        position: relative;
+        padding: 40px 20px;
+        border-radius: 20px;
+        margin-bottom: 40px;
+        backdrop-filter: blur(10px);
+        background: rgba(0, 0, 0, 0.5);
+        box-shadow: 0 0 30px rgba(0, 255, 255, 0.2);
+        overflow: hidden;
+    }
+
+        .artist-section::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('@ViewBag.FotoUrl');
+            background-size: cover;
+            background-position: center;
+            filter: blur(10px) brightness(0.3);
+            z-index: 0;
+        }
+
     .artist-profile {
         display: flex;
         align-items: center;
-        gap: 20px;
-        margin-bottom: 30px;
+        gap: 30px;
+        position: relative;
+        z-index: 1;
     }
 
     .artist-photo {
-        width: 150px;
-        height: 150px;
+        width: 200px;
+        height: 200px;
         border-radius: 50%;
         object-fit: cover;
-        border: 3px solid #007bff;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        border: 5px solid #00ffff;
+        box-shadow: 0 0 25px rgba(0, 255, 255, 0.6);
+    }
+
+    .artist-info h1 {
+        font-size: 2.5rem;
+        color: #00ffff;
+        text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+    }
+
+    .artist-info p {
+        font-size: 1.2rem;
+        margin: 5px 0;
+        color: #e0e0e0;
     }
 
     .view-playlists-btn {
-        margin-top: 15px;
         display: inline-block;
-        padding: 10px 20px;
+        padding: 12px 28px;
         background-color: #28a745;
         color: white;
         font-weight: bold;
         text-decoration: none;
-        border-radius: 8px;
-        transition: background-color 0.3s ease;
+        border-radius: 12px;
+        margin-top: 10px;
+        transition: all 0.3s ease;
+        font-size: 1.1rem;
+        box-shadow: 0 0 10px rgba(40, 167, 69, 0.4);
     }
 
         .view-playlists-btn:hover {
-            background-color: #218838;
-            text-decoration: none;
-            color: white;
+            background-color: #1f8c39;
+            transform: scale(1.05);
         }
+
+
+    h2 {
+        font-size: 2rem;
+        margin-top: 40px;
+        text-align: center;
+        color: #00ffff;
+        text-shadow: 0 0 8px rgba(0, 255, 255, 0.4);
+    }
 </style>
 
-<h1>@ViewBag.NombreArtistico</h1>
+<div class="artist-section">
+    <div class="artist-profile">
+        <img src="@ViewBag.FotoUrl" alt="@ViewBag.NombreArtistico" class="artist-photo" />
 
-<div class="artist-profile">
-    <img src="@ViewBag.FotoUrl" alt="@ViewBag.NombreArtistico" class="artist-photo" />
+        <div class="artist-info">
+            <h1>@ViewBag.NombreArtistico</h1>
+            <p><strong>Biografía:</strong> @ViewBag.Biografia</p>
+            <p><strong>Email:</strong> @ViewBag.Email</p>
 
-    <div>
-        <p><strong>Biografía:</strong> @ViewBag.Biografia</p>
-        <p><strong>Email:</strong> @ViewBag.Email</p>
-
-        <a asp-controller="VistasPlaylists" asp-action="PlaylistPorArtista" asp-route-email="@ViewBag.Email" class="btn btn-primary">Ver Playlists</a>
+            <a asp-controller="VistasPlaylists"
+               asp-action="PlaylistPorArtista"
+               asp-route-email="@ViewBag.Email"
+               class="view-playlists-btn">
+                Ver Playlists
+            </a>
+        </div>
     </div>
 </div>
 
@@ -60,25 +120,39 @@
 
     if (canciones != null && canciones.Count > 0)
     {
-        <ul>
+        <ul class="canciones">
             @foreach (var cancion in canciones)
             {
-                <li>
+                <li>                  
                     <strong>@cancion.Titulo</strong>
-                    <br />
+                    @if (User.IsInRole("Oyente"))
+                    {
+                        <form asp-controller="VistasPlaylists" asp-action="DarMeGusta" method="post" class="form-inline">
+                            <input type="hidden" name="cancionId" value="@cancion.Id" />
+                            <button type="submit" class="btn btn-sm btn-primary" onclick="return confirm('¿Agregar esta canción a Me Gusta?');">
+                                Me Gusta
+                            </button>
+                        </form>
+                    }
+                    
+                    @if (User.IsInRole("OyentePremium"))
+                    {
+                        <form asp-controller="VistasPlaylists" asp-action="GuardarEnPlaylist" method="get">
+                            <input type="hidden" name="cancionId" value="@cancion.Id" />
+                            <button type="submit" class="btn btn-sm btn-primary">
+                                Guardar canción
+                            </button>
+                        </form>
+                    }
                     <div class="audio-player" data-id="@cancion.Id">
                         <div class="player-controls">
                             <button class="play-pause" data-id="@cancion.Id">▶️</button>
                             <span class="time current">0:00</span>
                             <input type="range" class="progress" value="0" step="1">
                             <span class="time duration">0:00</span>
-
-                            @* Solo mostrar si es Oyente Premium *@
                             @if (User.IsInRole("OyentePremium"))
                             {
-                                <a class="download-btn" href="@cancion.UrlArchivo" download>
-                                    ⬇️
-                                </a>
+                                <a class="download-btn" href="@cancion.UrlArchivo" download>⬇️</a>
                             }
                         </div>
                         <audio id="audio-@cancion.Id" src="@cancion.UrlArchivo"></audio>
@@ -89,10 +163,10 @@
     }
     else
     {
-        <p>No hay canciones disponibles.</p>
+        <p class="text-white text-center">No hay canciones disponibles.</p>
     }
 }
 else
 {
-    <p>No se pudieron obtener canciones para este artista.</p>
+    <p class="text-white text-center">No se pudieron obtener canciones para este artista.</p>
 }

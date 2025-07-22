@@ -4,101 +4,106 @@
     ViewData["Title"] = "Estado de la Suscripción";
     var currentEmail = User.Claims.FirstOrDefault(c => c.Type == "email")?.Value?.ToLower();
 }
-<h1>@ViewData["Title"]</h1>
 
-@if (Model.Tipo == "Free")
-{
-    <div class="mb-4">
-        <p>No tienes una suscripción activa. Si deseas activar una, selecciona un plan.</p>
-        <a asp-action="ActivarSuscripcion" class="btn btn-primary">Activar Suscripción</a>
-    </div>
-}
-else
-{
-    <div class="mb-4">
-        <div class="card mb-4">
+<div class="container mt-5">
+    <h2 class="text-center text-white mb-4">@ViewData["Title"]</h2>
+
+    @if (Model.Tipo == "Free")
+    {
+        <div class="alert alert-info text-center">
+            <p class="mb-3">Actualmente no tienes una suscripción activa.</p>
+            <a asp-action="ActivarSuscripcion" class="btn btn-success btn-lg">Activar Suscripción</a>
+        </div>
+    }
+    else
+    {
+        <div class="card bg-dark text-white shadow-lg mb-4 border border-info rounded-4">
             <div class="card-body">
-                <p><strong>Tipo de Suscripción:</strong> @Model.Tipo</p>
-                <p><strong>Plan:</strong> @Model.Plan</p>
-                <p><strong>Precio:</strong> @Model.Precio.ToString("C")</p>
-                <p><strong>Fecha de Inicio:</strong> @Model.FechaInicio.ToString("dd/MM/yyyy HH:mm")</p>
-                <p><strong>Fecha de Fin:</strong> @Model.FechaFin.ToString("dd/MM/yyyy HH:mm")</p>
-                <p><strong>¿Eres el titular?:</strong> @(Model.EsTitular ? "Sí" : "No")</p>
+                <h4 class="card-title text-info mb-3">Detalles de tu suscripción</h4>
+                <ul class="list-unstyled fs-5">
+                    <li><strong>Tipo:</strong> @Model.Tipo</li>
+                    <li><strong>Plan:</strong> @Model.Plan</li>
+                    <li><strong>Precio:</strong> @Model.Precio.ToString("C")</li>
+                    <li><strong>Inicio:</strong> @Model.FechaInicio.ToString("dd/MM/yyyy HH:mm")</li>
+                    <li><strong>Fin:</strong> @Model.FechaFin.ToString("dd/MM/yyyy HH:mm")</li>
+                    <li><strong>¿Eres el titular?:</strong> @(Model.EsTitular ? "Sí" : "No")</li>
+                </ul>
             </div>
         </div>
 
         @if (ViewBag.ErrorMiembro != null)
         {
-            <div class="alert alert-danger">
-                @ViewBag.ErrorMiembro
-            </div>
+            <div class="alert alert-danger">@ViewBag.ErrorMiembro</div>
         }
 
-        @* Solo permitir agregar miembros si es titular y el plan no es "Individual" *@
         @if (Model.EsTitular && !Model.Plan.Equals("Individual", StringComparison.OrdinalIgnoreCase))
         {
-            <div class="mb-3 d-flex align-items-start">
-                <form asp-action="AgregarMiembro" method="post" class="d-flex me-2">
-                    <input type="email" name="email" class="form-control me-2" placeholder="Correo del nuevo miembro" required />
-                    <button type="submit" class="btn btn-success">Agregar Miembro</button>
+            <div class="mb-4">
+                <form asp-action="AgregarMiembro" method="post" class="row g-2 align-items-center">
+                    <div class="col-md-8">
+                        <input type="email" name="email" class="form-control form-control-lg" placeholder="Correo del nuevo miembro" required />
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <button type="submit" class="btn btn-outline-info btn-lg">Agregar Miembro</button>
+                    </div>
                 </form>
             </div>
         }
 
-        @* Botón para cancelar suscripción siempre disponible al titular *@
         @if (Model.EsTitular)
         {
-            <div class="mb-3">
-                <a asp-action="CancelarSuscripcion" class="btn btn-danger">Cancelar Suscripción</a>
+            <div class="text-end mb-4">
+                <a asp-action="CancelarSuscripcion" class="btn btn-outline-danger btn-lg">Cancelar Suscripción</a>
             </div>
         }
 
-        <h4>Miembros de tu suscripción</h4>
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Correo</th>
-                    <th>Fecha agregado</th>
-                    <th>Rol</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var miembro in Model.Miembros)
-                {
+        <div class="table-responsive">
+            <h4 class="text-white mb-3">Miembros de tu suscripción</h4>
+            <table class="table table-bordered table-hover table-dark rounded-3 overflow-hidden">
+                <thead class="table-info text-dark">
                     <tr>
-                        <td>@miembro.Email</td>
-                        <td>@miembro.FechaAgregado.ToString("dd/MM/yyyy HH:mm")</td>
-                        <td>
-                            @if (miembro.EsTitular)
-                            {
-                                <span class="badge bg-primary">Titular</span>
-                            }
-                            else
-                            {
-                                <span class="badge bg-secondary">Miembro</span>
-                            }
-                        </td>
-                        <td>
-                            @if (Model.EsTitular && !miembro.EsTitular)
-                            {
-                                <form method="post" asp-action="EliminarMiembro" class="d-inline me-2">
-                                    <input type="hidden" name="email" value="@miembro.Email" />
-                                    <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
-                                </form>
-                            }
-                        </td>
+                        <th>Correo</th>
+                        <th>Fecha agregado</th>
+                        <th>Rol</th>
+                        <th>Acciones</th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach (var miembro in Model.Miembros)
+                    {
+                        <tr>
+                            <td>@miembro.Email</td>
+                            <td>@miembro.FechaAgregado.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td>
+                                @if (miembro.EsTitular)
+                                {
+                                    <span class="badge bg-primary">Titular</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Miembro</span>
+                                }
+                            </td>
+                            <td>
+                                @if (Model.EsTitular && !miembro.EsTitular)
+                                {
+                                    <form method="post" asp-action="EliminarMiembro" class="d-inline">
+                                        <input type="hidden" name="email" value="@miembro.Email" />
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
+                                    </form>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
 
-        @* Botón Salir fuera de la tabla para miembros no titulares *@
         @if (!Model.EsTitular && Model.Miembros.Any(m => m.Email.ToLower() == currentEmail))
         {
-            <form asp-action="SalirDeSuscripcion" method="post" class="mt-3">
-                <button type="submit" class="btn btn-warning">Salir de la Suscripción</button>
+            <form asp-action="SalirDeSuscripcion" method="post" class="mt-4 text-center">
+                <button type="submit" class="btn btn-warning btn-lg">Salir de la Suscripción</button>
             </form>
         }
-    </div>
-}
+    }
+</div>

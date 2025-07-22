@@ -59,7 +59,6 @@ namespace SoftfyWeb.Controllers
             return Ok(playlists);
         }
 
-        [Authorize(Roles = "OyentePremium,Artista,Admin")]
         [HttpGet("{id}/canciones")]
         public async Task<IActionResult> ObtenerCanciones(int id)
         {

@@ -2,25 +2,59 @@
     var nombre = ViewBag.NombreArtistico as string;
     var biografia = ViewBag.Biografia as string;
     var fotoUrl = ViewBag.FotoUrl as string;
-    var email = ViewBag.Email as string;
+    var correo = ViewBag.Email as string;
     var urlImagen = $"https://localhost:7003/api/artistas/foto/{fotoUrl}";
 }
 
-<div class="container mt-5">
-    <h2>Perfil del Artista</h2>
+<style>
+    .perfil-contenedor {
+        padding: 40px;
+        border-radius: 30px;
+        background: radial-gradient(circle at center, #0f1a2b 0%, #121212 100%);
+        box-shadow: 0 0 40px rgba(0, 255, 255, 0.3);
+        color: white;
+    }
 
+    .perfil-img {
+        width: 80%;
+        max-width: 400px;
+        aspect-ratio: 1 / 1;
+        border-radius: 50%;
+        border: 5px solid #00ffff;
+        object-fit: cover;
+        box-shadow: 0 0 30px rgba(0, 255, 255, 0.6);
+    }
+
+    .form-control,
+    textarea {
+        background-color: #000000;
+        color: white;
+        border: 2px solid #00ffff;
+    }
+
+    label {
+        font-weight: bold;
+    }
+
+    button.btn {
+        margin-top: 10px;
+    }
+</style>
+
+<div class="container mt-5 perfil-contenedor">
+    <h2 class="text-center mb-4">Perfil del Artista</h2>
     <div class="row">
-        <div class="col-md-4">
-            <img src="@urlImagen" alt="Foto del artista"
-                 class="img-fluid rounded-circle shadow"
-                 style="width: 200px; height: 200px; object-fit: cover;" />
+        <!-- COLUMNA IZQUIERDA: IMAGEN -->
+        <div class="col-md-6 d-flex justify-content-center align-items-center">
+            <img src="@urlImagen" alt="Foto del artista" class="perfil-img" />
         </div>
 
-        <div class="col-md-8">
+        <!-- COLUMNA DERECHA: INFORMACIÓN Y FORMULARIO -->
+        <div class="col-md-6">
             <div id="modoTexto">
                 <p><strong>Nombre artístico:</strong> @nombre</p>
                 <p><strong>Biografía:</strong> @biografia</p>
-                <p><strong>Correo electrónico:</strong> @email</p>
+                <p><strong>Correo:</strong> @correo</p>
                 <button class="btn btn-warning" onclick="activarEdicion()">Editar</button>
             </div>
 
@@ -30,22 +64,14 @@
                     <label class="form-label">Nombre artístico</label>
                     <input type="text" class="form-control" name="NombreArtistico" value="@nombre" required />
                 </div>
-
                 <div class="mb-3">
                     <label class="form-label">Biografía</label>
                     <textarea class="form-control" name="Biografia" rows="5">@biografia</textarea>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">Correo electrónico</label>
-                    <input type="email" name="Email" class="form-control"
-                           value="@email" readonly />               <!-- ← aquí -->
-                </div>
-                <div class="mb-3">
                     <label class="form-label">Cambiar foto</label>
                     <input type="file" name="Foto" class="form-control" accept="image/*" />
                 </div>
-
-
 
                 <button type="submit" class="btn btn-primary">Guardar Cambios</button>
                 <button type="button" class="btn btn-secondary" onclick="cancelarEdicion()">Cancelar</button>

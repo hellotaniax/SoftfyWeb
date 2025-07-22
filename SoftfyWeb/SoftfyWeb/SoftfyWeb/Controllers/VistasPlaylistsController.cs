@@ -130,11 +130,11 @@ namespace SoftfyWeb.Controllers
             return View("Error", CrearErrorModel());
         }
 
-        [HttpPost, Authorize]
+        [HttpPost, Authorize, ValidateAntiForgeryToken]
         public async Task<IActionResult> QuitarCancion(int playlistId, int cancionId)
         {
             var client = ObtenerClienteConToken();
-            var resp = await client.DeleteAsync($"playlists/{playlistId}/quitar/{cancionId}");
+            var resp = await client.DeleteAsync($"https://localhost:7003/api/Playlists/{playlistId}/quitar/{cancionId}");
             if (resp.IsSuccessStatusCode)
                 return RedirectToAction(nameof(Detalle), new { id = playlistId });
 

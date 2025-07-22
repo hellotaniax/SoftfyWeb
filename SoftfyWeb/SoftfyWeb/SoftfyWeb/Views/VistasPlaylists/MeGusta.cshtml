@@ -54,10 +54,15 @@ else
                     </div>
                 </td>
                 <td>
-                    <form asp-action="QuitarCancion" method="post" class="d-inline">
+                    <form asp-controller="VistasPlaylists"
+                          asp-action="QuitarMeGusta"
+                          method="post"
+                          class="d-inline">
+                        @Html.AntiForgeryToken()
                         <input type="hidden" name="playlistId" value="@ViewBag.PlaylistId" />
                         <input type="hidden" name="cancionId" value="@cancion.Id" />
-                        <button type="submit" class="btn btn-sm btn-danger"
+                        <button type="submit"
+                                class="btn btn-sm btn-danger"
                                 onclick="return confirm('¿Eliminar de Me Gusta?');">
                             Eliminar
                         </button>

@@ -11,8 +11,27 @@
     <ul class="list-group">
         @foreach (var cancion in Model)
         {
-            <li class="list-group-item">
+            <li class="list-group-item">              
                 <strong>@cancion.Titulo</strong>
+                @if (User.IsInRole("Oyente"))
+                {
+                    <form asp-controller="VistasPlaylists" asp-action="DarMeGusta" method="post" class="form-inline">
+                        <input type="hidden" name="cancionId" value="@cancion.Id" />
+                        <button type="submit" class="btn btn-sm btn-primary" onclick="return confirm('¿Agregar esta canción a Me Gusta?');">
+                            Me Gusta
+                        </button>
+                    </form>
+                }
+
+                @if (User.IsInRole("OyentePremium"))
+                {
+                    <form asp-controller="VistasPlaylists" asp-action="GuardarEnPlaylist" method="get">
+                        <input type="hidden" name="cancionId" value="@cancion.Id" />
+                        <button type="submit" class="btn btn-sm btn-primary">
+                            Guardar canción
+                        </button>
+                    </form>
+                }
                 <div class="audio-player" data-id="@cancion.Id">
                     <div class="player-controls">
                         <button class="play-pause" data-id="@cancion.Id">▶️</button>

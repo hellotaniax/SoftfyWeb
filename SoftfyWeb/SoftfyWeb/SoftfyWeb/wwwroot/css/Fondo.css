@@ -3,29 +3,20 @@
     margin: 0;
     padding: 0;
     font-family: 'Segoe UI', sans-serif;
-    background: linear-gradient( -45deg, #ffd700, #ff8c00, #000000, #1e90ff, #00ffff );
-    background-size: 400% 400%;
-    animation: gradientBG 15s ease infinite;
+    background-color: #000010; /* fondo base oscuro profundo */
+    background-image: radial-gradient(circle at 25% 35%, rgba(0, 255, 255, 0.2) 0%, transparent 40%), /* Aqua visible */
+    radial-gradient(circle at 75% 20%, rgba(255, 255, 255, 0.15) 0%, transparent 50%), /* Blanco suave */
+    radial-gradient(circle at 50% 80%, rgba(0, 255, 255, 0.12) 0%, transparent 50%), /* Más aqua */
+    radial-gradient(circle at 85% 65%, rgba(255, 255, 255, 0.08) 0%, transparent 50%), /* Blanco difuso */
+    radial-gradient(circle at 40% 60%, rgba(0, 0, 128, 0.2) 0%, transparent 60%); /* Azul marino */
+    background-repeat: no-repeat;
+    background-size: cover;
     color: white;
     overflow-x: hidden;
 }
 
-@keyframes gradientBG {
-    0% {
-        background-position: 0% 50%;
-    }
-
-    50% {
-        background-position: 100% 50%;
-    }
-
-    100% {
-        background-position: 0% 50%;
-    }
-}
-
 h1, h2, h3, h4, h5 {
-    font-family: 'Segoe UI', 'Verdana', 'Arial', sans-serif;
+    font-family: 'Trebuchet MS', 'Segoe UI', 'Verdana', 'Arial', sans-serif;
     color: #ffffff;
     text-align: center;
     font-weight: 900;
@@ -35,9 +26,8 @@ h1, h2, h3, h4, h5 {
     text-shadow: 0 0 5px rgba(0, 255, 170, 0.5);
 }
 
-/* Texto general moderno */
 p, span, label, li {
-    font-family: 'Verdana', 'Arial', sans-serif;
+    font-family: 'Trebuchet MS', 'Verdana', 'Arial', sans-serif;
     color: #e0e0e0;
     font-size: 1em;
     letter-spacing: 0.5px;
@@ -57,26 +47,26 @@ a {
 .container {
     background-color: rgba(0, 0, 0, 0.3);
     padding: 2rem;
-    border-radius: 16px;
+    border-radius: 40px;
     backdrop-filter: blur(10px);
-    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 30px #00ffe0;
     margin-top: 2rem;
 }
 
 /* Contenedores interactivos */
 .cancion-item, .artista-card {
     background-color: rgba(255, 255, 255, 0.05);
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    border-radius: 40px;
+    box-shadow: 0 4px 15px #00ced1;
     transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
     backdrop-filter: blur(10px);
     padding: 1rem;
 }
 
     .cancion-item:hover, .artista-card:hover {
-        background-color: #1db9ff;
+        background-color: rgba(0, 255, 255, 0.15); /* aqua translúcido */
         transform: translateY(-5px);
-        box-shadow: 0 6px 20px rgba(0, 255, 255, 0.4);
+        box-shadow: 0 6px 25px rgba(0, 255, 255, 0.6);
         cursor: pointer;
     }
 
@@ -188,35 +178,36 @@ button {
     height: 100vh;
 }
 
-/* Sidebar fija izquierda */
+.sidebar h3 {
+    margin-bottom: 2rem;
+    color: white;
+    text-align: center;
+}
+
 .sidebar {
     width: 250px;
-    background-color: rgba(48, 54, 61, 0.95);
+    background-color: rgba(255, 255, 255, 0.05); /* fondo negro sólido */
     color: white;
     padding: 1.5rem 1rem;
     display: flex;
     flex-direction: column;
-    backdrop-filter: blur(6px);
-    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.4);
+    box-shadow: 2px 0 10px rgba(0, 255, 255, 0.2);
 }
 
-    .sidebar h3 {
-        margin-bottom: 2rem;
-        color: white;
-        text-align: center;
-    }
-
     .sidebar a {
-        color: #e0e0e0;
+        color: white;
         text-decoration: none;
         padding: 0.6rem 1rem;
         border-radius: 8px;
-        transition: background-color 0.3s ease;
+        transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
     }
 
         .sidebar a:hover {
-            background-color: #3b3f52;
+            background-color: #00ffff; /* aqua brillante */
+            color: #000000; /* texto negro */
+            box-shadow: 0 0 12px #00ffff;
         }
+
 
     .sidebar .logout {
         margin-top: auto;
@@ -476,4 +467,29 @@ form .btn-success {
     /* Botones organizados al final */
     .cancion-item form {
         margin-top: 1rem;
+    }
+
+.card.plan-card {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 20px !important;
+    border: 2px solid transparent;
+    transition: transform 0.2s ease, border 0.2s ease;
+}
+
+    .card.plan-card:hover {
+        transform: scale(1.03);
+        border: 2px solid #00ced1;
+    }
+
+    .card.plan-card .card-title {
+        color: #00ffff !important;
+        font-weight: bold;
+    }
+
+    .card.plan-card .card-subtitle {
+        color: #00ced1 !important;
+    }
+
+    .card.plan-card .card-text {
+        color: white !important;
     }

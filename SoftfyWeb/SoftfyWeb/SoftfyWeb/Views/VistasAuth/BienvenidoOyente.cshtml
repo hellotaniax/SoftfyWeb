@@ -3,10 +3,14 @@
     var esPremium = User.IsInRole("OyentePremium"); // Verificar si el usuario es premium
 }
 
-<link rel="stylesheet" href="~/css/player.css" />
+<style>
+    h2.text-center {
+        font-size: 4rem;
+    }
+</style>
 
-<div class="container">
-    <h2 class="text-center">Bienvenido a Softfy 🎵, @ViewBag.OyenteNombre</h2>
+<div class="container2">
+    <h2 class="text-center">Bienvenido a Softfy, ¡ @ViewBag.OyenteNombre !</h2>
 
     <div class="section">
         <h3>Todas las Canciones</h3>
@@ -27,24 +31,22 @@
 
                     @if (!string.IsNullOrEmpty(cancion.UrlArchivo))
                     {
-                        <audio id="audio-@cancion.Id" src="@cancion.UrlArchivo" preload="metadata"></audio>
+                        <div class="audio-player" data-id="@cancion.Id">
+                            <div class="player-controls">
+                                <button class="play-pause" data-id="@cancion.Id">▶️</button>
+                                <span class="time current">0:00</span>
+                                <input type="range" class="progress" value="0" step="1">
+                                <span class="time duration">0:00</span>
 
-                        <div class="custom-player" data-audio-id="audio-@cancion.Id">
-                            <div class="controls">
-                                <button class="backward-btn">⏪</button>
-                                <button class="play-btn">▶️</button>
-                                <button class="forward-btn">⏩</button>
+                                @* Solo mostrar si es Oyente Premium *@
+                                @if (User.IsInRole("OyentePremium"))
+                                {
+                                    <a class="download-btn" href="@cancion.UrlArchivo" download>
+                                        ⬇️
+                                    </a>
+                                }
                             </div>
-
-                            <div class="progress-container">
-                                <input type="range" class="progress" value="0" min="0" step="0.1">
-                                <span class="time">0:00 / 0:00</span>
-                            </div>
-
-                            <div class="volume-controls">
-                                <input type="range" class="volume" min="0" max="1" step="0.01" value="1">
-                                <button class="mute-btn">🔊</button>
-                            </div>
+                            <audio id="audio-@cancion.Id" src="@cancion.UrlArchivo"></audio>
                         </div>
                     }
                     else
@@ -52,18 +54,15 @@
                         <p>No disponible</p>
                     }
 
-                    @if (esPremium)  
+                    
+                    @if (User.IsInRole("OyentePremium"))
                     {
                         <form asp-controller="VistasPlaylists" asp-action="GuardarEnPlaylist" method="get">
                             <input type="hidden" name="cancionId" value="@cancion.Id" />
-                            <button type="submit" class="btn btn-sm btn-primary" onclick="return confirm('¿Guardar esta canción?');">
+                            <button type="submit" class="btn btn-sm btn-primary">
                                 Guardar canción
                             </button>
                         </form>
-                        <!-- Botón para descargar la canción si es premium -->
-                        <a href="@cancion.UrlArchivo" download="@cancion.Titulo" class="btn btn-sm btn-success" style="margin-top: 10px;">
-                            Descargar canción
-                        </a>
                     }
                 </div>
             }
@@ -71,8 +70,8 @@
     </div>
 
     <div class="section">
-        <h3>Todas las Playlists</h3>
-        <div class="canciones-container">
+        <h3>Todas los Albumes</h3>
+        <div class="playlist-container">
             @foreach (var playlist in ViewBag.TodasPlaylists)
             {
                 <div class="cancion-item">
@@ -107,92 +106,3 @@
         </div>
     </div>
 </div>
-
-@section Scripts {
-    <script src="~/js/player.js"></script>
-}
-
-<style>
-    .artistas-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: 20px;
-        justify-items: center;
-        margin-top: 2rem;
-    }
-
-    .artista-card {
-        width: 100%;
-        padding: 1rem;
-        background-color: #f8f8f8;
-        border-radius: 10px;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        text-align: center;
-    }
-
-    .artista-img {
-        width: 120px;
-        height: 120px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 3px solid #1db954;
-        margin-bottom: 0.6rem;
-    }
-
-    .artista-card h5 {
-        margin: 0;
-        font-size: 17px;
-        color: #111;
-    }
-
-    .artista-card .bio {
-        font-size: 13px;
-        color: #444;
-        margin-top: 0.3rem;
-        font-style: italic;
-    }
-
-    .canciones-container {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 20px;
-        justify-content: space-evenly;
-        margin-top: 1rem;
-    }
-
-    .cancion-item {
-        background-color: #f8f8f8;
-        padding: 1rem;
-        border-radius: 10px;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        width: 300px;
-        text-align: center;
-    }
-
-    .form-inline {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 10px;
-    }
-
-    .form-inline button {
-        margin-left: 10px;
-    }
-
-    .custom-player {
-        margin-top: 1rem;
-        text-align: center;
-    }
-
-    .controls button {
-        margin: 0 10px;
-    }
-
-    .progress-container {
-        margin: 1rem 0;
-    }
-
-    .volume-controls {
-        margin-top: 1rem;
-    }
-</style>

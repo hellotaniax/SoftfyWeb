@@ -35,10 +35,18 @@
                     </div>
                 </td>
                 <td>
-                    <form asp-action="QuitarCancion" method="post">
+                    <form asp-controller="VistasPlaylists"
+                          asp-action="QuitarCancion"
+                          method="post"
+                          class="d-inline">
+                        @Html.AntiForgeryToken()
                         <input type="hidden" name="playlistId" value="@ViewBag.PlaylistId" />
                         <input type="hidden" name="cancionId" value="@c.Id" />
-                        <button type="submit" class="btn btn-sm btn-danger">Quitar</button>
+                        <button type="submit"
+                                class="btn btn-sm btn-danger"
+                                onclick="return confirm('¿Eliminar?');">
+                            Eliminar
+                        </button>
                     </form>
                 </td>
             </tr>
@@ -46,30 +54,35 @@
     </tbody>
 </table>
 
-<h4>Agregar canción al álbum</h4>
-<form asp-action="AgregarCancion" method="post" class="row g-2">
-    @Html.AntiForgeryToken() <!-- Token anti-forgery -->
+@if (User.IsInRole("Artista"))
+{
+    <h4>Agregar canción al álbum</h4>
+    <form asp-action="AgregarCancion" method="post" class="row g-2">
+        @Html.AntiForgeryToken() <!-- Token anti-forgery -->
 
-    <input type="hidden" name="playlistId" value="@ViewBag.PlaylistId" />
+        <input type="hidden" name="playlistId" value="@ViewBag.PlaylistId" />
 
-    <div class="col-auto">
-        <select name="cancionId" class="form-control">
-            <option value="">-- Selecciona una canción --</option>
-            @if (ViewBag.CancionesArtista != null && ViewBag.CancionesArtista.Count > 0)
-            {
-                foreach (var cancion in ViewBag.CancionesArtista)
+        <div class="col-auto">
+            <select name="cancionId" class="form-control">
+                <option value="">-- Selecciona una canción --</option>
+                @if (ViewBag.CancionesArtista != null && ViewBag.CancionesArtista.Count > 0)
                 {
-                    <option value="@cancion.Id">@cancion.Titulo</option>
+                    foreach (var cancion in ViewBag.CancionesArtista)
+                    {
+                        <option value="@cancion.Id">@cancion.Titulo</option>
+                    }
                 }
-            }
-            else
-            {
-                <option value="">No hay canciones disponibles</option>
-            }
-        </select>
-    </div>
+                else
+                {
+                    <option value="">No hay canciones disponibles</option>
+                }
+            </select>
+        </div>
 
-    <div class="col-auto">
-        <button type="submit" class="btn btn-primary mb-3">Agregar</button>
-    </div>
-</form>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-primary mb-3">Agregar</button>
+        </div>
+    </form>
+}
+
+

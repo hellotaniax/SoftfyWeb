@@ -1,170 +1,151 @@
 ﻿@{
     ViewData["Title"] = "Resultados de la Búsqueda";
 }
+<style>
+    /* Estilo para el cuadro de perfil del artista */
+    .artist-profile {
+        display: flex;
+        align-items: center;
+        background-color: #2f343b;
+        border-radius: 12px;
+        padding: 20px;
+        margin: 20px 0;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        color: #cccfd5;
+    }
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewData["Title"]</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <style>
-        /* Estilo para el cuadro de perfil del artista */
-        .artist-profile {
-            display: flex;
-            align-items: center;
+    /* Estilo para la imagen circular */
+    .artist-photo {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 20px;
+    }
+
+    /* Estilo para el texto dentro del cuadro */
+    .artist-info {
+        flex: 1;
+    }
+
+        .artist-info h4 {
+            color: #fff;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .artist-info p {
+            color: #79828c;
+            font-size: 1rem;
+        }
+
+    /* Estilo para el cuadro de la playlist */
+    .playlist-profile {
+        display: flex;
+        align-items: center;
+        background-color: #343a40;
+        border-radius: 12px;
+        padding: 20px;
+        margin: 20px 0;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        color: #cccfd5;
+    }
+
+    /* Estilo para las canciones */
+    .song-list {
+        list-style-type: none;
+        padding: 0;
+    }
+
+        .song-list li {
             background-color: #2f343b;
-            border-radius: 12px;
-            padding: 20px;
-            margin: 20px 0;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            color: #cccfd5;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 8px;
         }
 
-        /* Estilo para la imagen circular */
-        .artist-photo {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin-right: 20px;
-        }
-
-        /* Estilo para el texto dentro del cuadro */
-        .artist-info {
-            flex: 1;
-        }
-
-            .artist-info h4 {
+            .song-list li strong {
                 color: #fff;
-                font-size: 1.5rem;
-                margin-bottom: 10px;
             }
 
-            .artist-info p {
+            .song-list li span {
                 color: #79828c;
-                font-size: 1rem;
             }
 
-        /* Estilo para el cuadro de la playlist */
-        .playlist-profile {
-            display: flex;
-            align-items: center;
-            background-color: #343a40;
-            border-radius: 12px;
-            padding: 20px;
-            margin: 20px 0;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            color: #cccfd5;
-        }
-
-        /* Estilo para las canciones */
-        .song-list {
-            list-style-type: none;
-            padding: 0;
-        }
-
-            .song-list li {
-                background-color: #2f343b;
-                padding: 10px;
-                margin-bottom: 10px;
-                border-radius: 8px;
-            }
-
-                .song-list li strong {
-                    color: #fff;
-                }
-
-                .song-list li span {
-                    color: #79828c;
-                }
-
-        /* Estilo para el reproductor de audio */
-        audio {
-            width: 100%;
-            margin-top: 10px;
-        }
-
-    </style>
-</head>
-<body>
-    <h2>Resultados de la Búsqueda</h2>
-
-    @if (ViewBag.Error != null)
-    {
-        <div style="color: red;" class="text-center">@ViewBag.Error</div>
+    /* Estilo para el reproductor de audio */
+    audio {
+        width: 100%;
+        margin-top: 10px;
     }
 
-    <!-- Resultados de Canciones -->
-    @if (ViewBag.Canciones != null)
-    {
-        <h3>Resultados de Canciones</h3>
-        <ul class="song-list">
-            @foreach (var cancion in ViewBag.Canciones as List<SoftfyWeb.Modelos.Dtos.CancionRespuestaDto>)
-            {
-                <li>
-                    <strong>@cancion.Titulo</strong> - @cancion.Artista.NombreArtistico
-                    <br>
-                    <span>Género: @cancion.Genero</span>
-                    <br>
-                    <span>Fecha de Lanzamiento: @cancion.FechaLanzamiento.ToString("dd/MM/yyyy")</span>
-                    <div class="mt-2">
-                        <div class="audio-player" data-id="@cancion.Id">
-                            <div class="player-controls">
-                                <button class="play-pause" data-id="@cancion.Id">▶️</button>
-                                <span class="time current">0:00</span>
-                                <input type="range" class="progress" value="0" step="1">
-                                <span class="time duration">0:00</span>
+</style>
 
-                                @* Solo mostrar si es Oyente Premium *@
-                                @if (User.IsInRole("OyentePremium"))
-                                {
-                                    <a class="download-btn" href="@cancion.UrlArchivo" download>
-                                        ⬇️
-                                    </a>
-                                }
-                            </div>
-                            <audio id="audio-@cancion.Id" src="@cancion.UrlArchivo"></audio>
+<h2>Resultados de la Búsqueda</h2>
+
+@if (ViewBag.Error != null)
+{
+    <div style="color: red;" class="text-center">@ViewBag.Error</div>
+}
+
+@if (ViewBag.Canciones != null)
+{
+    <h3>Resultados de Canciones</h3>
+    <ul class="song-list">
+        @foreach (var cancion in ViewBag.Canciones as List<SoftfyWeb.Modelos.Dtos.CancionRespuestaDto>)
+        {
+            <li>
+                <strong>@cancion.Titulo</strong> - @cancion.Artista.NombreArtistico
+                <br />
+                <span>Género: @cancion.Genero</span>
+                <br />
+                <span>Fecha de Lanzamiento: @cancion.FechaLanzamiento.ToString("dd/MM/yyyy")</span>
+                <div class="mt-2">
+                    <div class="audio-player" data-id="@cancion.Id">
+                        <div class="player-controls">
+                            <button class="play-pause" data-id="@cancion.Id">▶️</button>
+                            <span class="time current">0:00</span>
+                            <input type="range" class="progress" value="0" step="1">
+                            <span class="time duration">0:00</span>
+
+                            @if (User.IsInRole("OyentePremium"))
+                            {
+                                <a class="download-btn" href="@cancion.UrlArchivo" download>
+                                    ⬇️
+                                </a>
+                            }
                         </div>
+                        <audio id="audio-@cancion.Id" src="@cancion.UrlArchivo"></audio>
                     </div>
-                </li>
+                </div>
+            </li>
+        }
+    </ul>
+}
+
+@if (ViewBag.Artista != null)
+{
+    <h3 class="text-center text-white mb-4">Perfil del Artista</h3>
+    <div class="artista-img">
+        <img src="@ViewBag.Artista.FotoUrl" alt="@ViewBag.Artista.NombreArtistico" class="artist-photo" />
+
+        <div class="artista-card">
+            <h5>
+                <a href="@Url.Action("VerPerfilpublico", "VistasAuth", new { id = ViewBag.Artista.Id })">
+                    @ViewBag.Artista.NombreArtistico
+                </a>
+            </h5>
+            @if (!string.IsNullOrEmpty(ViewBag.Artista.Biografia))
+            {
+                <p><strong>Biografía:</strong> @ViewBag.Artista.Biografia</p>
             }
-        </ul>
-    }
-
-    <!-- Perfil del Artista -->
-    @if (ViewBag.Artista != null)
-    {
-        <h3 class="text-center text-white mb-4">Perfil del Artista</h3>
-        <div class="artista-img">
-            <img src="@ViewBag.Artista.FotoUrl" alt="@ViewBag.Artista.NombreArtistico" class="artist-photo" />
-
-            <div class="artista-card">
-                <h5>
-                    <a href="@Url.Action("VerPerfilpublico", "VistasAuth", new { id = ViewBag.Artista.Id })">
-                        @ViewBag.Artista.NombreArtistico
-                    </a>
-                    <br />
-                </h5>
-                @if (!string.IsNullOrEmpty(ViewBag.Artista.Biografia))
-                {
-                    <p><strong>Biografía:</strong> @ViewBag.Artista.Biografia</p>
-                }
-                else
-                {
-                    <p><strong>Biografía:</strong> No disponible</p>
-                }
-            </div>
+            else
+            {
+                <p><strong>Biografía:</strong> No disponible</p>
+            }
         </div>
-    }
-    else
-    {
-        <p class="text-center text-white">No se encontró el perfil del artista.</p>
-    }
-
-    <!-- Bootstrap JS y dependencias -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-
-</body>
-</html>
+    </div>
+}
+else
+{
+    <p class="text-center text-white">No se encontró el perfil del artista.</p>
+}

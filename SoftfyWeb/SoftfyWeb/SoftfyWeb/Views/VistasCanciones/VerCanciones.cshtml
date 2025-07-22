@@ -8,9 +8,9 @@
 }
 
 <div class="container mt-4">
-    <h2 style="font-size: 2rem; font-weight: bold; color: #000;">
+    <h1>
         Album @nombreAlbum
-    </h2>
+    </h1>
 
     @if (!Model.Any())
     {
@@ -22,8 +22,23 @@
             @foreach (var c in Model)
             {
                 <div class="col-md-3 mb-4">
-                    <div class="card">
+                    <div class="cancion-item">
                         <div class="card-body">
+                            <form asp-controller="VistasPlaylists" asp-action="DarMeGusta" method="post" class="form-inline">
+                                <input type="hidden" name="cancionId" value="@c.Id" />
+                                <button type="submit" class="btn btn-sm btn-primary" onclick="return confirm('¿Agregar esta canción a Me Gusta?');">
+                                    Me Gusta
+                                </button>
+                            </form>
+                            @if (User.IsInRole("OyentePremium"))
+                            {
+                                <form asp-controller="VistasPlaylists" asp-action="GuardarEnPlaylist" method="get">
+                                    <input type="hidden" name="cancionId" value="@c.Id" />
+                                    <button type="submit" class="btn btn-sm btn-primary">
+                                        Guardar canción
+                                    </button>
+                                </form>
+                            }
                             <h5 class="card-title">@c.Titulo</h5>
                             <p class="card-text">Género: @c.Genero</p>
                             <p class="card-text">Fecha de Lanzamiento: @c.FechaLanzamiento.ToShortDateString()</p>
@@ -44,7 +59,6 @@
                                 </div>
                                 <audio id="audio-@c.Id" src="@c.UrlArchivo"></audio>
                             </div>
-                           
                         </div>
                     </div>
                 </div>
