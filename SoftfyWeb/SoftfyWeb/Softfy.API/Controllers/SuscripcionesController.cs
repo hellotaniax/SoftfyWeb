@@ -70,7 +70,7 @@ namespace SoftfyWeb.Controllers
         }
 
         // Ver estado de la suscripción
-        [Authorize]
+        [Authorize(Roles = "Oyente, OyentePremium")]
         [HttpGet("estado")]
         public async Task<IActionResult> Estado()
         {
@@ -113,6 +113,11 @@ namespace SoftfyWeb.Controllers
             var usuarioNuevo = await _userManager.FindByEmailAsync(dto.Email);
             if (usuarioNuevo == null)
                 return NotFound(new { mensaje = "Usuario no encontrado" });
+            var rolesUsuarioNuevo = await _userManager.GetRolesAsync(usuarioNuevo);
+            if (rolesUsuarioNuevo.Contains("Artista"))
+            {
+                return BadRequest(new { mensaje = "No puedes agregar a un artista como miembro de una suscripción" });
+            }
 
             // Ya es miembro de alguna suscripción
             var yaMiembro = _context.MiembrosSuscripciones.Any(m => m.UsuarioId == usuarioNuevo.Id);

@@ -38,6 +38,11 @@ namespace SoftfyWeb.Controllers
             string id = Activity.Current?.Id ?? HttpContext.TraceIdentifier;
             return new ErrorViewModel { RequestId = id };
         }
+        [HttpGet]
+        public IActionResult AccesoDenegado()
+        {
+            return View();
+        }
 
         // Reutilizable: carga estado y miembros
         private async Task<SuscripcionEstadoDto> CargarEstadoYMiembrosAsync()
@@ -65,13 +70,19 @@ namespace SoftfyWeb.Controllers
         // GET: /VistasSuscripciones/Estado
         public async Task<IActionResult> Estado()
         {
+            // Verifica si el usuario es Artista
+            var roles = User.FindAll(ClaimTypes.Role).Select(r => r.Value).ToList();
+            if (roles.Contains("Artista"))
+            {
+                TempData["Error"] = "Los artistas no tienen acceso al estado de suscripción.";
+                return RedirectToAction("AccesoDenegado", "VistasSuscripciones"); // O una vista personalizada de acceso denegado
+            }
+
             var model = await CargarEstadoYMiembrosAsync();
             if (model == null)
                 return View("Error", CrearErrorModel());
 
-            // Extrae el email del usuario actual (fallback a Name si no hubiera claim)
-            var currentEmail = User.FindFirstValue(ClaimTypes.Email)
-                               ?? User.Identity.Name;
+            var currentEmail = User.FindFirstValue(ClaimTypes.Email) ?? User.Identity.Name;
             ViewBag.CurrentEmail = currentEmail;
 
             return View(model);

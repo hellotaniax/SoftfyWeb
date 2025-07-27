@@ -80,7 +80,7 @@ else
                     <td>@p.TotalCanciones</td>
                     <td>
                         <a asp-controller="VistasPlaylists" asp-action="Detalle" asp-route-id="@p.Id" class="btn btn-sm btn-info">Ver</a>
-                        <form asp-controller="Playlists" asp-action="Eliminar" method="post" asp-route-id="@p.Id" class="d-inline">
+                        <form asp-controller="VistasPlaylists" asp-action="Eliminar" method="post" asp-route-id="@p.Id" class="d-inline">
                             <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
                         </form>
                     </td>

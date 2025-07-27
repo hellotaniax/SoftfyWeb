@@ -152,7 +152,7 @@ namespace SoftfyWeb.Controllers
             return Ok(new { mensaje = "Nombre de playlist actualizado", nuevoNombre });
         }
 
-        [Authorize(Roles = "OyentePremium,Artista,Admin")]
+        [Authorize(Roles = "Admin,Artista,OyentePremium")]
         [HttpDelete("{playlistId}/eliminar")]
         public async Task<IActionResult> EliminarPlaylist(int playlistId)
         {
@@ -160,15 +160,19 @@ namespace SoftfyWeb.Controllers
 
             var playlist = await _context.Playlists
                 .Include(p => p.PlaylistCanciones)
-                .FirstOrDefaultAsync(p => p.Id == playlistId && p.UsuarioId == usuario.Id && !p.EsMeGusta);
+                .Include(p => p.Usuario)
+                .FirstOrDefaultAsync(p => p.Id == playlistId);
 
             if (playlist == null)
                 return NotFound(new { mensaje = "Playlist no encontrada" });
 
-            // Elimina primero las relaciones con canciones
+            var esAdmin = await _userManager.IsInRoleAsync(usuario, "Admin");
+
+            if (!esAdmin && playlist.UsuarioId != usuario.Id)
+                return Forbid("No tienes permiso para eliminar esta playlist.");
+
             _context.PlaylistCanciones.RemoveRange(playlist.PlaylistCanciones);
 
-            // Luego elimina la playlist
             _context.Playlists.Remove(playlist);
             await _context.SaveChangesAsync();
 

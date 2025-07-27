@@ -1,0 +1,12 @@
+﻿@{
+    ViewData["Title"] = "Acceso Denegado";
+}
+
+<div class="container text-center mt-5">
+    <div class="card p-5 shadow-lg" style="background-color: #181818; color: white; border-radius: 15px;">
+        <h1 class="display-4 mb-4">🚫 Acceso Denegado</h1>
+        <p class="lead">Esta sección está reservada solo para usuarios oyentes.</p>
+        <p>Tu cuenta actual tiene rol de <strong>Artista</strong>, por lo tanto, no puedes ver el estado de suscripción.</p>
+        <a class="btn btn-success mt-3" href="@Url.Action("Index", "Home")">Volver al inicio</a>
+    </div>
+</div>
